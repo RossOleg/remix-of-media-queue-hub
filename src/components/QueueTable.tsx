@@ -162,7 +162,12 @@ export function QueueTable({
                   </td>
                   <td className="px-4 py-3">
                     <div>
-                      <p className="font-mono text-xs text-foreground truncate max-w-[200px]">{item.fileName}</p>
+                      <a
+                        href={`${PARENT_BASE}/?open=${item.mediaItemId}`}
+                        className="font-mono text-xs text-primary hover:underline truncate max-w-[200px] block"
+                      >
+                        {item.fileName}
+                      </a>
                       <p className="text-[10px] text-muted-foreground font-mono">ID: {item.mediaItemId}</p>
                     </div>
                   </td>
