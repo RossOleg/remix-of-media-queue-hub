@@ -35,7 +35,7 @@ function ThumbPreview({ guid }: { guid: string }) {
       </HoverCardTrigger>
       <HoverCardContent side="right" align="start" className="w-auto p-1">
         <img
-          src={getThumbUrl(guid)}
+          src={getThumbUrl(guid).replace("-s.jpg", "-m.jpg")}
           alt="full preview"
           className="max-w-[400px] max-h-[400px] rounded object-contain bg-muted"
         />
