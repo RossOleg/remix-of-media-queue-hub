@@ -16,7 +16,7 @@ function ThumbPreview({ guid }: { guid: string }) {
   const [failed, setFailed] = useState(false);
   if (failed) {
     return (
-      <div className="w-10 h-10 rounded border border-border bg-muted flex items-center justify-center">
+      <div className="w-12 h-12 rounded border border-border bg-muted flex items-center justify-center">
         <ImageOff className="h-4 w-4 text-muted-foreground/50" />
       </div>
     );
@@ -25,7 +25,7 @@ function ThumbPreview({ guid }: { guid: string }) {
     <img
       src={getThumbUrl(guid)}
       alt="preview"
-      className="w-10 h-10 rounded border border-border object-cover bg-muted"
+      className="w-12 h-12 rounded border border-border object-cover bg-muted"
       loading="lazy"
       onError={() => setFailed(true)}
     />
@@ -119,7 +119,7 @@ export function QueueTable({
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/50">
-              <th className="px-4 py-3 w-12"></th>
+              <th className="px-3 py-3 w-16"></th>
               {cols.map(c => (
                 <th
                   key={c.key}
@@ -157,7 +157,7 @@ export function QueueTable({
             ) : (
               items.map(item => (
                 <tr key={item.id} className="border-b border-border/50 hover:bg-accent/50 transition-colors">
-                  <td className="px-4 py-2">
+                  <td className="px-3 py-2">
                     <ThumbPreview guid={item.id} />
                   </td>
                   <td className="px-4 py-3">
