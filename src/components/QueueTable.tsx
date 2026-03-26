@@ -5,19 +5,6 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { QueueItem, SortKey } from "@/api/queueApi";
 
-function fmt(iso?: string) {
-  if (!iso) return <span className="text-muted-foreground/40">—</span>;
-  const d = new Date(iso);
-  if (isNaN(d.getTime()) || d.getFullYear() <= 1) return <span className="text-muted-foreground/40">—</span>;
-  return (
-    <span className="whitespace-nowrap">
-      <span>{d.toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit", year: "2-digit" })}</span>
-      {" "}
-      <span>{d.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</span>
-    </span>
-  );
-}
-
 interface Props {
   items: QueueItem[];
   isLoading: boolean;
@@ -125,7 +112,7 @@ export function QueueTable({
             {isLoading ? (
               Array.from({ length: pageSize }, (_, i) => (
                 <tr key={i} className="border-b border-border/50">
-                  {Array.from({ length: 10 }, (_, j) => (
+                  {Array.from({ length: 7 }, (_, j) => (
                     <td key={j} className="px-4 py-3">
                       <Skeleton className="h-4 w-full" />
                     </td>
@@ -134,7 +121,7 @@ export function QueueTable({
               ))
             ) : items.length === 0 ? (
               <tr>
-                <td colSpan={10} className="px-4 py-12 text-center text-muted-foreground font-mono text-sm">
+                <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground font-mono text-sm">
                   No files
                 </td>
               </tr>
@@ -151,14 +138,16 @@ export function QueueTable({
                     {(item.status === "failed" || item.status === "waitingForProcessAfterFail") && item.error ? (
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <span className="cursor-help"><StatusBadge status={item.status} /></span>
+                          <span className="cursor-help">
+                            <StatusBadge status={item.status} queuedAt={item.queuedAt} startedAt={item.startedAt} completedAt={item.completedAt} lastAttempt={item.lastAttempt} />
+                          </span>
                         </TooltipTrigger>
                         <TooltipContent side="top" className="max-w-xs font-mono text-xs bg-destructive/90 text-destructive-foreground border-destructive/50">
                           {item.error}
                         </TooltipContent>
                       </Tooltip>
                     ) : (
-                      <StatusBadge status={item.status} />
+                      <StatusBadge status={item.status} queuedAt={item.queuedAt} startedAt={item.startedAt} completedAt={item.completedAt} lastAttempt={item.lastAttempt} />
                     )}
                   </td>
                   <td className="px-4 py-3">
@@ -169,18 +158,6 @@ export function QueueTable({
                   </td>
                   <td className="px-4 py-3">
                     <span className="font-mono text-xs text-muted-foreground">{item.fileSize}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="font-mono text-xs text-muted-foreground">{fmt(item.queuedAt)}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="font-mono text-xs text-muted-foreground">{fmt(item.startedAt)}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="font-mono text-xs text-muted-foreground">{fmt(item.completedAt)}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="font-mono text-xs text-muted-foreground">{fmt(item.lastAttempt)}</span>
                   </td>
                   <td className="px-4 py-3">
                     {item.error ? (
