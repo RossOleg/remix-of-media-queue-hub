@@ -134,13 +134,13 @@ export function QueueTable({
               <th className="px-3 py-3 w-16"></th>
               {cols.map(c => (
                 <th
-                  key={c.key}
-                  onClick={() => toggleSort(c.key)}
-                  className={`px-4 py-3 text-left font-medium text-muted-foreground cursor-pointer select-none group hover:text-foreground transition-colors ${c.className ?? ""}`}
+                  key={c.key ?? c.label}
+                  onClick={c.key ? () => toggleSort(c.key!) : undefined}
+                  className={`px-4 py-3 text-left font-medium text-muted-foreground select-none transition-colors ${c.key ? "cursor-pointer group hover:text-foreground" : ""} ${c.className ?? ""}`}
                 >
                   <span className="flex items-center gap-1.5">
                     {c.label}
-                    <SortIcon col={c.key} />
+                    {c.key && <SortIcon col={c.key} />}
                   </span>
                 </th>
               ))}
