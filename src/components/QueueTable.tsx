@@ -25,7 +25,7 @@ function ThumbPreview({ guid }: { guid: string }) {
     <img
       src={getThumbUrl(guid)}
       alt="preview"
-      className="w-12 h-12 rounded border border-border object-contain bg-muted"
+      className="w-12 h-12 rounded border border-border object-cover bg-muted"
       loading="lazy"
       onError={() => setFailed(true)}
     />
