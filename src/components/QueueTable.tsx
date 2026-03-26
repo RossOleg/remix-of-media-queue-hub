@@ -8,9 +8,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PARENT_BASE } from "@/lib/config";
 import type { QueueItem, SortKey } from "@/api/queueApi";
 
-function getThumbUrl(guid: string): string {
+function getThumbUrl(guid: string, size: "s" | "o" = "s"): string {
   const g = guid.toLowerCase();
-  return `${PARENT_BASE}/thumb/${g[0]}/${g[1]}${g[2]}/${g}-s.jpg`;
+  return `${PARENT_BASE}/thumb/${g[0]}/${g[1]}${g[2]}/${g}-${size}.jpg`;
 }
 
 function ThumbPreview({ guid }: { guid: string }) {
@@ -23,13 +23,24 @@ function ThumbPreview({ guid }: { guid: string }) {
     );
   }
   return (
-    <img
-      src={getThumbUrl(guid)}
-      alt="preview"
-      className="w-12 h-12 rounded border border-border object-cover bg-muted"
-      loading="lazy"
-      onError={() => setFailed(true)}
-    />
+    <HoverCard openDelay={300} closeDelay={100}>
+      <HoverCardTrigger asChild>
+        <img
+          src={getThumbUrl(guid, "s")}
+          alt="preview"
+          className="w-12 h-12 rounded border border-border object-cover bg-muted cursor-pointer"
+          loading="lazy"
+          onError={() => setFailed(true)}
+        />
+      </HoverCardTrigger>
+      <HoverCardContent side="right" align="start" className="w-auto p-1">
+        <img
+          src={getThumbUrl(guid, "o")}
+          alt="full preview"
+          className="max-w-[400px] max-h-[400px] rounded object-contain bg-muted"
+        />
+      </HoverCardContent>
+    </HoverCard>
   );
 }
 
