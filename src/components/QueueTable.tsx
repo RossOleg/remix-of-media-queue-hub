@@ -8,9 +8,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PARENT_BASE } from "@/lib/config";
 import type { QueueItem, SortKey } from "@/api/queueApi";
 
-function getThumbUrl(guid: string, size: "s" | "o" = "s"): string {
+function getThumbUrl(guid: string): string {
   const g = guid.toLowerCase();
-  return `${PARENT_BASE}/thumb/${g[0]}/${g[1]}${g[2]}/${g}-${size}.jpg`;
+  return `${PARENT_BASE}/thumb/${g[0]}/${g[1]}${g[2]}/${g}-s.jpg`;
 }
 
 function ThumbPreview({ guid }: { guid: string }) {
@@ -26,7 +26,7 @@ function ThumbPreview({ guid }: { guid: string }) {
     <HoverCard openDelay={300} closeDelay={100}>
       <HoverCardTrigger asChild>
         <img
-          src={getThumbUrl(guid, "s")}
+          src={getThumbUrl(guid)}
           alt="preview"
           className="w-12 h-12 rounded border border-border object-cover bg-muted cursor-pointer"
           loading="lazy"
@@ -35,7 +35,7 @@ function ThumbPreview({ guid }: { guid: string }) {
       </HoverCardTrigger>
       <HoverCardContent side="right" align="start" className="w-auto p-1">
         <img
-          src={getThumbUrl(guid, "o")}
+          src={getThumbUrl(guid)}
           alt="full preview"
           className="max-w-[400px] max-h-[400px] rounded object-contain bg-muted"
         />
