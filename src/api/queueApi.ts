@@ -1,4 +1,5 @@
 import { API_BASE } from "@/lib/config";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 /* ── Queue Status ── */
 
@@ -16,7 +17,7 @@ export interface QueueStatusResponse {
 }
 
 export async function fetchQueueStatus(): Promise<QueueStatusResponse> {
-  const res = await fetch(`${API_BASE}/AI/GetAIQueueStatus`);
+  const res = await fetchWithAuth(`${API_BASE}/AI/GetAIQueueStatus`);
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   return res.json();
 }
@@ -99,7 +100,7 @@ export async function fetchQueueItems(params: FetchItemsParams): Promise<GetItem
     sortBy: String(params.sortBy),
     sortOrder: String(params.sortOrder),
   });
-  const res = await fetch(`${API_BASE}/AI/GetItemsAIStatus?${qs}`);
+  const res = await fetchWithAuth(`${API_BASE}/AI/GetItemsAIStatus?${qs}`);
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   return res.json();
 }
