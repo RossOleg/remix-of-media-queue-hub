@@ -1,9 +1,36 @@
-import { RotateCcw, ChevronLeft, ChevronRight, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
+import { useState } from "react";
+import { RotateCcw, ChevronLeft, ChevronRight, ArrowUp, ArrowDown, ArrowUpDown, ImageOff } from "lucide-react";
 import { StatusBadge } from "./StatusBadge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PARENT_BASE } from "@/lib/config";
 import type { QueueItem, SortKey } from "@/api/queueApi";
+
+function getThumbUrl(guid: string): string {
+  const g = guid.toLowerCase();
+  return `${PARENT_BASE}/thumb/${g[0]}/${g[1]}${g[2]}/${g}-s.jpg`;
+}
+
+function ThumbPreview({ guid }: { guid: string }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return (
+      <div className="w-10 h-10 rounded border border-border bg-muted flex items-center justify-center">
+        <ImageOff className="h-4 w-4 text-muted-foreground/50" />
+      </div>
+    );
+  }
+  return (
+    <img
+      src={getThumbUrl(guid)}
+      alt="preview"
+      className="w-10 h-10 rounded border border-border object-cover bg-muted"
+      loading="lazy"
+      onError={() => setFailed(true)}
+    />
+  );
+}
 
 interface Props {
   items: QueueItem[];
@@ -92,6 +119,7 @@ export function QueueTable({
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/50">
+              <th className="px-4 py-3 w-12"></th>
               {cols.map(c => (
                 <th
                   key={c.key}
@@ -112,7 +140,8 @@ export function QueueTable({
             {isLoading ? (
               Array.from({ length: pageSize }, (_, i) => (
                 <tr key={i} className="border-b border-border/50">
-                  {Array.from({ length: 7 }, (_, j) => (
+                  <td className="px-4 py-3"><Skeleton className="h-10 w-10 rounded" /></td>
+                  {Array.from({ length: 6 }, (_, j) => (
                     <td key={j} className="px-4 py-3">
                       <Skeleton className="h-4 w-full" />
                     </td>
@@ -121,13 +150,16 @@ export function QueueTable({
               ))
             ) : items.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground font-mono text-sm">
+                <td colSpan={8} className="px-4 py-12 text-center text-muted-foreground font-mono text-sm">
                   No files
                 </td>
               </tr>
             ) : (
               items.map(item => (
                 <tr key={item.id} className="border-b border-border/50 hover:bg-accent/50 transition-colors">
+                  <td className="px-4 py-2">
+                    <ThumbPreview guid={item.id} />
+                  </td>
                   <td className="px-4 py-3">
                     <div>
                       <p className="font-mono text-xs text-foreground truncate max-w-[200px]">{item.fileName}</p>
