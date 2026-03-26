@@ -16,12 +16,43 @@ const dotClass: Record<FileStatus, string> = {
   waitingForProcessAfterFail: "bg-primary status-pulse",
 };
 
-export function StatusBadge({ status }: { status: FileStatus }) {
+function fmtDate(iso?: string) {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (isNaN(d.getTime()) || d.getFullYear() <= 1) return null;
+  return `${d.toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit", year: "2-digit" })} ${d.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}`;
+}
+
+interface StatusBadgeProps {
+  status: FileStatus;
+  queuedAt?: string;
+  startedAt?: string;
+  completedAt?: string;
+  lastAttempt?: string;
+}
+
+export function StatusBadge({ status, queuedAt, startedAt, completedAt, lastAttempt }: StatusBadgeProps) {
   const c = config[status];
+
+  const dateMap: Record<FileStatus, string | undefined> = {
+    waiting: queuedAt,
+    processing: startedAt,
+    processed: completedAt,
+    failed: lastAttempt,
+    waitingForProcessAfterFail: lastAttempt,
+  };
+
+  const formatted = fmtDate(dateMap[status]);
+
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-mono font-medium ${c.className}`}>
-      <span className={`h-1.5 w-1.5 rounded-full ${dotClass[status]}`} />
-      {c.label}
-    </span>
+    <div className="flex flex-col gap-0.5">
+      <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-mono font-medium w-fit ${c.className}`}>
+        <span className={`h-1.5 w-1.5 rounded-full ${dotClass[status]}`} />
+        {c.label}
+      </span>
+      {formatted && (
+        <span className="text-[10px] font-mono text-muted-foreground pl-1">{formatted}</span>
+      )}
+    </div>
   );
 }
