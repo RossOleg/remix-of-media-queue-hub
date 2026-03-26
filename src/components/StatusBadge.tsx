@@ -52,7 +52,7 @@ export function StatusBadge({ status, queuedAt, startedAt, completedAt, lastAtte
         {c.label}
       </span>
       {formatted && (
-        <span className="text-[10px] font-mono text-muted-foreground pl-1">{formatted}</span>
+        <span className="text-[10px] font-mono text-muted-foreground pl-1">{label}: {formatted}</span>
       )}
     </div>
   );
