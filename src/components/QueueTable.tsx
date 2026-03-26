@@ -119,7 +119,7 @@ export function QueueTable({
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/50">
-              <th className="px-4 py-3 w-12"></th>
+              <th className="px-3 py-3 w-16"></th>
               {cols.map(c => (
                 <th
                   key={c.key}
