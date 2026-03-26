@@ -34,15 +34,16 @@ interface StatusBadgeProps {
 export function StatusBadge({ status, queuedAt, startedAt, completedAt, lastAttempt }: StatusBadgeProps) {
   const c = config[status];
 
-  const dateMap: Record<FileStatus, string | undefined> = {
-    waiting: queuedAt,
-    processing: startedAt,
-    processed: completedAt,
-    failed: lastAttempt,
-    waitingForProcessAfterFail: lastAttempt,
+  const dateMap: Record<FileStatus, { date: string | undefined; label: string }> = {
+    waiting: { date: queuedAt, label: "Queued At" },
+    processing: { date: startedAt, label: "Started at" },
+    processed: { date: completedAt, label: "Ended at" },
+    failed: { date: lastAttempt, label: "Last Attempt at" },
+    waitingForProcessAfterFail: { date: lastAttempt, label: "Last Attempt at" },
   };
 
-  const formatted = fmtDate(dateMap[status]);
+  const { date, label } = dateMap[status];
+  const formatted = fmtDate(date);
 
   return (
     <div className="flex flex-col gap-0.5">
