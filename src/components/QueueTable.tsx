@@ -36,10 +36,6 @@ const cols: { key: SortKey; label: string; className?: string }[] = [
   { key: "status", label: "Status" },
   { key: "totalProgress", label: "Progress", className: "w-36" },
   { key: "fileSize", label: "Size" },
-  { key: "inQueueSince", label: "Queued At" },
-  { key: "started", label: "Started at" },
-  { key: "ended", label: "Ended at" },
-  { key: "lastAttempt", label: "Last Attempt at" },
 ];
 
 export function QueueTable({
