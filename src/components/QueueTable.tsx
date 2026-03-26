@@ -57,9 +57,9 @@ interface Props {
   onSort: (key: SortKey | null, dir: "asc" | "desc") => void;
 }
 
-const cols: { key: SortKey; label: string; className?: string }[] = [
+const cols: { key: SortKey | null; label: string; className?: string }[] = [
   { key: "name", label: "File" },
-  { key: "status", label: "Status" },
+  { key: null, label: "Status" },
   { key: "totalProgress", label: "Progress", className: "w-36" },
   { key: "fileSize", label: "Size" },
 ];
@@ -134,13 +134,13 @@ export function QueueTable({
               <th className="px-3 py-3 w-16"></th>
               {cols.map(c => (
                 <th
-                  key={c.key}
-                  onClick={() => toggleSort(c.key)}
-                  className={`px-4 py-3 text-left font-medium text-muted-foreground cursor-pointer select-none group hover:text-foreground transition-colors ${c.className ?? ""}`}
+                  key={c.key ?? c.label}
+                  onClick={c.key ? () => toggleSort(c.key!) : undefined}
+                  className={`px-4 py-3 text-left font-medium text-muted-foreground select-none transition-colors ${c.key ? "cursor-pointer group hover:text-foreground" : ""} ${c.className ?? ""}`}
                 >
                   <span className="flex items-center gap-1.5">
                     {c.label}
-                    <SortIcon col={c.key} />
+                    {c.key && <SortIcon col={c.key} />}
                   </span>
                 </th>
               ))}
