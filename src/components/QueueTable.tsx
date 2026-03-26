@@ -57,9 +57,9 @@ interface Props {
   onSort: (key: SortKey | null, dir: "asc" | "desc") => void;
 }
 
-const cols: { key: SortKey; label: string; className?: string }[] = [
+const cols: { key: SortKey | null; label: string; className?: string }[] = [
   { key: "name", label: "File" },
-  { key: "status", label: "Status" },
+  { key: null, label: "Status" },
   { key: "totalProgress", label: "Progress", className: "w-36" },
   { key: "fileSize", label: "Size" },
 ];
