@@ -2,6 +2,7 @@ import { useState } from "react";
 import { RotateCcw, ChevronLeft, ChevronRight, ArrowUp, ArrowDown, ArrowUpDown, ImageOff } from "lucide-react";
 import { StatusBadge } from "./StatusBadge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PARENT_BASE } from "@/lib/config";
