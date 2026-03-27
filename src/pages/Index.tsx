@@ -146,22 +146,12 @@ const Index = () => {
           </div>
           <div className="ml-auto flex items-center gap-2">
             <button
-              onClick={() => {
-                const html = document.documentElement;
-                const isDark = html.classList.contains("dark");
-                html.classList.toggle("dark", !isDark);
-              }}
-              className="h-8 w-8 rounded-md bg-secondary flex items-center justify-center text-secondary-foreground hover:bg-accent transition-colors"
-              title="Toggle theme"
-            >
-              <Sun className="h-4 w-4 dark:hidden" />
-              <Moon className="h-4 w-4 hidden dark:block" />
-            </button>
-            <button
               onClick={() => { window.close(); setTimeout(() => { window.location.href = PARENT_BASE || "/"; }, 100); }}
               className="h-8 w-8 rounded-md bg-secondary flex items-center justify-center text-secondary-foreground hover:bg-destructive hover:text-destructive-foreground transition-colors"
               title="Close"
             >
+              <X className="h-4 w-4" />
+            </button>
               <X className="h-4 w-4" />
             </button>
           </div>
