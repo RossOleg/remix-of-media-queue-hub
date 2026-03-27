@@ -8,7 +8,7 @@ import {
   fetchCustomScheme,
   fetchCustomColor,
   fetchAdditionalCustomColor,
-  hexToHsl,
+  buildAccentPalette,
   mapRawItem,
   STATUS_TO_INT,
   SORT_KEY_TO_INT,
