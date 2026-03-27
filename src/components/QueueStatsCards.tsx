@@ -13,9 +13,9 @@ export function QueueStatsCards({ apiStats, isLoading, error }: Props) {
 
   const stats = [
     { label: "Waiting", value: d?.waiting ?? 0, accent: null },
-    { label: "Processing", value: d?.processing ?? 0, accent: "bg-blue-500/15 text-blue-400" },
+    { label: "Processing", value: d?.processing ?? 0, accent: "bg-warning/15 text-warning" },
     { label: "Failed", value: d?.failed ?? 0, accent: "bg-destructive/15 text-destructive" },
-    { label: "Retry", value: d?.waitingForProcessAfterError ?? 0, accent: "bg-orange-500/15 text-orange-400" },
+    { label: "Retry", value: d?.waitingForProcessAfterError ?? 0, accent: "bg-primary/10 text-primary" },
     { label: "Processed", value: d?.processed ?? 0, accent: null },
     { label: "Total", value: total, accent: null },
   ];

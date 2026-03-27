@@ -227,7 +227,7 @@ export function QueueTable({
                   <td className="px-3 py-2">
                     <ThumbPreview guid={item.id} />
                   </td>
-                  <td className="px-4 py-3 max-w-[350px]">
+                  <td className="px-4 py-3 max-w-[450px]">
                     <div>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -273,12 +273,12 @@ export function QueueTable({
                   <td className="px-4 py-3">
                     <span className="font-mono text-xs text-muted-foreground">{item.fileSize}</span>
                   </td>
-                  <td className="px-4 py-3 text-center">
+                  <td className="px-2 py-3 w-10 text-center">
                     {item.error ? (
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <span className="inline-flex cursor-help">
-                            <AlertCircle className="h-4 w-4 text-destructive" />
+                            <AlertCircle className="h-5 w-5 text-destructive" />
                           </span>
                         </TooltipTrigger>
                         <TooltipContent side="top" className="max-w-sm font-mono text-xs bg-destructive/90 text-destructive-foreground border-destructive/50">
