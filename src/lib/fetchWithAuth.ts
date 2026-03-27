@@ -15,9 +15,15 @@ export async function fetchWithAuth(
   });
 
   if (res.status === 401) {
-    // Redirect to parent app login page
     window.location.href = LOGIN_URL;
-    // Return a never-resolving promise to prevent further processing
+    return new Promise(() => {});
+  }
+
+  // Some servers return 200 with an HTML login page instead of 401.
+  // Detect this by checking the content-type header.
+  const ct = res.headers.get("content-type") || "";
+  if (ct.includes("text/html")) {
+    window.location.href = LOGIN_URL;
     return new Promise(() => {});
   }
 
