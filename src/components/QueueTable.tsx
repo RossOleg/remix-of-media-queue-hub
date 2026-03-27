@@ -208,7 +208,7 @@ export function QueueTable({
               Array.from({ length: pageSize }, (_, i) => (
                 <tr key={i} className="border-b border-border/50">
                   <td className="px-4 py-3"><Skeleton className="h-10 w-10 rounded" /></td>
-                  {Array.from({ length: 6 }, (_, j) => (
+                  {Array.from({ length: 7 }, (_, j) => (
                     <td key={j} className="px-4 py-3">
                       <Skeleton className="h-4 w-full" />
                     </td>
@@ -217,7 +217,7 @@ export function QueueTable({
               ))
             ) : items.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground font-mono text-sm">
+                <td colSpan={8} className="px-4 py-12 text-center text-muted-foreground font-mono text-sm">
                   No files
                 </td>
               </tr>
