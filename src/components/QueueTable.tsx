@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { RotateCcw, ChevronLeft, ChevronRight, ImageOff, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
+import { RotateCcw, ChevronLeft, ChevronRight, ImageOff, ArrowUp, ArrowDown, ArrowUpDown, AlertCircle } from "lucide-react";
 import { StatusBadge } from "./StatusBadge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
@@ -273,19 +273,19 @@ export function QueueTable({
                   <td className="px-4 py-3">
                     <span className="font-mono text-xs text-muted-foreground">{item.fileSize}</span>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-center">
                     {item.error ? (
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <span className="font-mono text-xs text-destructive truncate max-w-[200px] block cursor-help">{item.error}</span>
+                          <span className="inline-flex cursor-help">
+                            <AlertCircle className="h-4 w-4 text-destructive" />
+                          </span>
                         </TooltipTrigger>
                         <TooltipContent side="top" className="max-w-sm font-mono text-xs bg-destructive/90 text-destructive-foreground border-destructive/50">
                           {item.error}
                         </TooltipContent>
                       </Tooltip>
-                    ) : (
-                      <span className="text-muted-foreground/40">—</span>
-                    )}
+                    ) : null}
                   </td>
                   <td className="px-4 py-3">
                     {(item.status === "failed" || item.status === "waitingForProcessAfterFail") && (
