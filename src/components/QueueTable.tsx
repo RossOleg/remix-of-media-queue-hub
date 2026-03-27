@@ -63,10 +63,9 @@ const sortableCols: Record<string, SortKey | null> = {
   Status: null,
   Progress: null,
   Size: "fileSize",
-  Error: null,
 };
 
-const cols = ["File", "Type", "Status", "Progress", "Size", "Error"];
+const cols = ["File", "Type", "Status", "Progress", "Size"];
 
 function splitFileName(name: string): { baseName: string; ext: string } {
   const dotIdx = name.lastIndexOf(".");
@@ -249,43 +248,21 @@ export function QueueTable({
                     <span className="font-mono text-xs text-muted-foreground">{splitFileName(item.fileName).ext || "—"}</span>
                   </td>
                   <td className="px-4 py-3">
-                    {(item.status === "failed" || item.status === "waitingForProcessAfterFail") && item.error ? (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <span className="cursor-help">
-                            <StatusBadge status={item.status} queuedAt={item.queuedAt} startedAt={item.startedAt} completedAt={item.completedAt} lastAttempt={item.lastAttempt} />
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent side="top" className="max-w-xs font-mono text-xs bg-destructive/90 text-destructive-foreground border-destructive/50">
-                          {item.error}
-                        </TooltipContent>
-                      </Tooltip>
-                    ) : (
-                      <StatusBadge status={item.status} queuedAt={item.queuedAt} startedAt={item.startedAt} completedAt={item.completedAt} lastAttempt={item.lastAttempt} />
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <Progress value={item.progress} className="h-1.5 flex-1" />
-                      <span className="font-mono text-xs text-muted-foreground w-8 text-right">{item.progress}%</span>
+                      <StatusBadge status={item.status} queuedAt={item.queuedAt} startedAt={item.startedAt} completedAt={item.completedAt} lastAttempt={item.lastAttempt} />
+                      {item.error && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="inline-flex cursor-help ml-auto">
+                              <AlertCircle className="h-4 w-4 text-destructive" />
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-sm font-mono text-xs bg-destructive/90 text-destructive-foreground border-destructive/50">
+                            {item.error}
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
                     </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="font-mono text-xs text-muted-foreground">{item.fileSize}</span>
-                  </td>
-                  <td className="px-2 py-3 w-10 text-center">
-                    {item.error ? (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <span className="inline-flex cursor-help">
-                            <AlertCircle className="h-5 w-5 text-destructive" />
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent side="top" className="max-w-sm font-mono text-xs bg-destructive/90 text-destructive-foreground border-destructive/50">
-                          {item.error}
-                        </TooltipContent>
-                      </Tooltip>
-                    ) : null}
                   </td>
                   <td className="px-4 py-3">
                     {(item.status === "failed" || item.status === "waitingForProcessAfterFail") && (
