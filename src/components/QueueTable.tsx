@@ -227,16 +227,26 @@ export function QueueTable({
                   <td className="px-3 py-2">
                     <ThumbPreview guid={item.id} />
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 max-w-[350px]">
                     <div>
-                      <a
-                        href={`${PARENT_BASE}/?open=${item.mediaItemId}`}
-                        className="font-mono text-xs text-primary hover:underline truncate max-w-[200px] block"
-                      >
-                        {item.fileName}
-                      </a>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <a
+                            href={`${PARENT_BASE}/?open=${item.mediaItemId}`}
+                            className="font-mono text-xs text-primary hover:underline truncate block"
+                          >
+                            {splitFileName(item.fileName).baseName}
+                          </a>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-md font-mono text-xs">
+                          {item.fileName}
+                        </TooltipContent>
+                      </Tooltip>
                       <p className="text-[10px] text-muted-foreground font-mono">ID: {item.mediaItemId}</p>
                     </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="font-mono text-xs text-muted-foreground">{splitFileName(item.fileName).ext || "—"}</span>
                   </td>
                   <td className="px-4 py-3">
                     {(item.status === "failed" || item.status === "waitingForProcessAfterFail") && item.error ? (
