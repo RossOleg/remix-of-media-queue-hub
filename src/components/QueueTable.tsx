@@ -59,13 +59,20 @@ interface Props {
 
 const sortableCols: Record<string, SortKey | null> = {
   File: "name",
+  Type: null,
   Status: null,
   Progress: null,
   Size: "fileSize",
   Error: null,
 };
 
-const cols = ["File", "Status", "Progress", "Size", "Error"];
+const cols = ["File", "Type", "Status", "Progress", "Size", "Error"];
+
+function splitFileName(name: string): { baseName: string; ext: string } {
+  const dotIdx = name.lastIndexOf(".");
+  if (dotIdx <= 0) return { baseName: name, ext: "" };
+  return { baseName: name.substring(0, dotIdx), ext: name.substring(dotIdx + 1).toUpperCase() };
+}
 
 export function QueueTable({
   items,
