@@ -1,10 +1,14 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Activity, Search, X, Sun, Moon } from "lucide-react";
+import { Activity, Search, X } from "lucide-react";
 import { PARENT_BASE } from "@/lib/config";
 import {
   fetchQueueStatus,
   fetchQueueItems,
+  fetchCustomScheme,
+  fetchCustomColor,
+  fetchAdditionalCustomColor,
+  hexToHsl,
   mapRawItem,
   STATUS_TO_INT,
   SORT_KEY_TO_INT,
