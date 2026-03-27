@@ -57,11 +57,22 @@ interface Props {
   onSort: (key: SortKey | null, dir: "asc" | "desc") => void;
 }
 
+function formatDate(iso?: string | null): string {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "—";
+  return d.toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
+}
+
 const cols: { key: SortKey | null; label: string; className?: string }[] = [
   { key: "name", label: "File" },
   { key: null, label: "Status" },
-  { key: "totalProgress", label: "Progress", className: "w-36" },
+  { key: "totalProgress", label: "Progress", className: "w-32" },
   { key: "fileSize", label: "Size" },
+  { key: "inQueueSince", label: "Queued" },
+  { key: "started", label: "Started" },
+  { key: "ended", label: "Completed" },
+  { key: "lastAttempt", label: "Last Attempt" },
 ];
 
 export function QueueTable({
