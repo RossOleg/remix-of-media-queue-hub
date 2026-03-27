@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Activity, Search, X } from "lucide-react";
+import { ArrowLeft, Search } from "lucide-react";
 import { PARENT_BASE } from "@/lib/config";
 import {
   fetchQueueStatus,
