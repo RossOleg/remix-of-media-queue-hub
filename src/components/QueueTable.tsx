@@ -103,7 +103,7 @@ export function QueueTable({
   }
 
   return (
-    <div className="rounded-lg border border-border bg-card overflow-hidden">
+    <div className="rounded-lg bg-card overflow-hidden">
       {totalPages > 1 && (
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
           <span className="text-xs text-muted-foreground font-mono">
@@ -113,21 +113,73 @@ export function QueueTable({
             <button
               onClick={() => onPageChange(Math.max(0, page - 1))}
               disabled={page === 0}
-              className="p-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              className="p-1.5 rounded-md text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:pointer-events-none transition-colors"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => onPageChange(Math.min(totalPages - 1, page + 1))}
               disabled={page === totalPages - 1}
-              className="p-1.5 rounded-md border border-border text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              className="p-1.5 rounded-md text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:pointer-events-none transition-colors"
             >
               <ChevronRight className="h-3.5 w-3.5" />
             </button>
           </div>
         </div>
       )}
-      <div className="overflow-x-auto">
+
+      {/* Mobile card view */}
+      <div className="block md:hidden divide-y divide-border">
+        {isLoading ? (
+          Array.from({ length: 5 }, (_, i) => (
+            <div key={i} className="p-4 space-y-2">
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-3 w-1/2" />
+              <Skeleton className="h-1.5 w-full" />
+            </div>
+          ))
+        ) : items.length === 0 ? (
+          <div className="px-4 py-12 text-center text-muted-foreground font-mono text-sm">
+            No files
+          </div>
+        ) : (
+          items.map(item => (
+            <div key={item.id} className="p-4 space-y-2">
+              <div className="flex items-start gap-3">
+                <ThumbPreview guid={item.id} />
+                <div className="flex-1 min-w-0">
+                  <a
+                    href={`${PARENT_BASE}/?open=${item.mediaItemId}`}
+                    className="font-mono text-xs text-primary hover:underline truncate block"
+                  >
+                    {item.fileName}
+                  </a>
+                  <p className="text-[10px] text-muted-foreground font-mono">ID: {item.mediaItemId}</p>
+                  <div className="mt-1">
+                    <StatusBadge status={item.status} queuedAt={item.queuedAt} startedAt={item.startedAt} completedAt={item.completedAt} lastAttempt={item.lastAttempt} />
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Progress value={item.progress} className="h-1.5 flex-1" />
+                <span className="font-mono text-xs text-muted-foreground w-8 text-right">{item.progress}%</span>
+                <span className="font-mono text-xs text-muted-foreground">{item.fileSize}</span>
+              </div>
+              {item.error && (
+                <p className="font-mono text-[10px] text-destructive truncate">{item.error}</p>
+              )}
+              {(item.status === "failed" || item.status === "waitingForProcessAfterFail") && (
+                <button className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="Retry">
+                  <RotateCcw className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Desktop table view */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/50">
