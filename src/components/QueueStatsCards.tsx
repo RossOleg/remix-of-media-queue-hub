@@ -32,11 +32,11 @@ export function QueueStatsCards({ apiStats, isLoading, error }: Props) {
     <div className="grid grid-cols-6 gap-2">
       {stats.map(s => (
         <div key={s.label} className="rounded-lg bg-card p-2 text-center">
-          <span className="text-xs text-muted-foreground">{s.label}</span>
+          <span className="text-[10px] uppercase tracking-widest text-muted-foreground">{s.label}</span>
           {isLoading ? (
-            <Skeleton className="mx-auto mt-1 h-6 w-10" />
+            <Skeleton className="mx-auto mt-1 h-7 w-12" />
           ) : (
-            <p className="mt-0.5 text-lg font-mono font-bold text-card-foreground">{s.value}</p>
+            <p className="mt-0.5 text-2xl font-mono font-extrabold tabular-nums text-card-foreground">{s.value}</p>
           )}
         </div>
       ))}
