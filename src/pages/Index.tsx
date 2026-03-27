@@ -8,7 +8,7 @@ import {
   fetchCustomScheme,
   fetchCustomColor,
   fetchAdditionalCustomColor,
-  hexToHsl,
+  matchPalette,
   mapRawItem,
   STATUS_TO_INT,
   SORT_KEY_TO_INT,
@@ -80,13 +80,16 @@ const Index = () => {
   });
 
   useEffect(() => {
-    if (!accentColor) return;
-    const hsl = hexToHsl(accentColor);
-    document.documentElement.style.setProperty("--primary", hsl);
-    document.documentElement.style.setProperty("--ring", hsl);
-    document.documentElement.style.setProperty("--sidebar-primary", hsl);
-    document.documentElement.style.setProperty("--sidebar-ring", hsl);
-  }, [accentColor]);
+    if (!accentColor || isLightTheme === undefined) return;
+    const palette = matchPalette(accentColor, isLightTheme);
+    const root = document.documentElement.style;
+    root.setProperty("--primary", palette.primary);
+    root.setProperty("--primary-foreground", palette.primaryForeground);
+    root.setProperty("--ring", palette.primary);
+    root.setProperty("--sidebar-primary", palette.primary);
+    root.setProperty("--sidebar-primary-foreground", palette.primaryForeground);
+    root.setProperty("--sidebar-ring", palette.primary);
+  }, [accentColor, isLightTheme]);
 
   const { data: itemsData, isLoading: itemsLoading, error: itemsError } = useQuery({
     queryKey: ["queueItems", filter, search, page, sortBy, sortOrder],
