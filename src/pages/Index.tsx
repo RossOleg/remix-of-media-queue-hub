@@ -59,6 +59,34 @@ const Index = () => {
     setAuthConfirmed(true);
   }
 
+  // Branding: theme from API
+  const { data: isLightTheme } = useQuery({
+    queryKey: ["branding", "scheme"],
+    queryFn: fetchCustomScheme,
+    staleTime: Infinity,
+  });
+
+  useEffect(() => {
+    if (isLightTheme === undefined) return;
+    document.documentElement.classList.toggle("dark", !isLightTheme);
+  }, [isLightTheme]);
+
+  // Branding: accent color from API
+  const { data: accentColor } = useQuery({
+    queryKey: ["branding", "accentColor", isLightTheme],
+    queryFn: () => isLightTheme ? fetchCustomColor() : fetchAdditionalCustomColor(),
+    enabled: isLightTheme !== undefined,
+    staleTime: Infinity,
+  });
+
+  useEffect(() => {
+    if (!accentColor) return;
+    const hsl = hexToHsl(accentColor);
+    document.documentElement.style.setProperty("--primary", hsl);
+    document.documentElement.style.setProperty("--ring", hsl);
+    document.documentElement.style.setProperty("--sidebar-primary", hsl);
+  }, [accentColor]);
+
   const { data: itemsData, isLoading: itemsLoading, error: itemsError } = useQuery({
     queryKey: ["queueItems", filter, search, page, sortBy, sortOrder],
     queryFn: () =>
