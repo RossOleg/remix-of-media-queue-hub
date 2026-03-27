@@ -272,6 +272,18 @@ export function QueueTable({
                     <span className="font-mono text-xs text-muted-foreground">{item.fileSize}</span>
                   </td>
                   <td className="px-4 py-3">
+                    <span className="font-mono text-[10px] text-muted-foreground whitespace-nowrap">{formatDate(item.queuedAt)}</span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="font-mono text-[10px] text-muted-foreground whitespace-nowrap">{formatDate(item.startedAt)}</span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="font-mono text-[10px] text-muted-foreground whitespace-nowrap">{formatDate(item.completedAt)}</span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="font-mono text-[10px] text-muted-foreground whitespace-nowrap">{formatDate(item.lastAttempt)}</span>
+                  </td>
+                  <td className="px-4 py-3">
                     {item.error ? (
                       <Tooltip>
                         <TooltipTrigger asChild>
