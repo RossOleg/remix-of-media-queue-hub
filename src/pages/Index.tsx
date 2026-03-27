@@ -78,6 +78,15 @@ const Index = () => {
     setPage(0);
   }, []);
 
+  // Don't render UI until auth is confirmed (prevents flash before 401 redirect)
+  if (!authConfirmed && statsLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="h-6 w-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-overlay">
