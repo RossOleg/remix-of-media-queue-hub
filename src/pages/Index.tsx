@@ -14,6 +14,15 @@ import { QueueTable } from "@/components/QueueTable";
 
 type Filter = "all" | FileStatus;
 
+const filterStyles: Record<Filter, { active: string }> = {
+  all: { active: "bg-foreground/10 border-foreground/30 text-foreground" },
+  waiting: { active: "bg-secondary border-border text-secondary-foreground" },
+  processing: { active: "bg-warning/15 border-warning/30 text-warning" },
+  processed: { active: "bg-success/15 border-success/30 text-success" },
+  failed: { active: "bg-destructive/15 border-destructive/30 text-destructive" },
+  waitingForProcessAfterFail: { active: "bg-primary/10 border-primary/30 text-primary" },
+};
+
 const filters: { value: Filter; label: string }[] = [
   { value: "all", label: "All" },
   { value: "waiting", label: "Waiting" },
@@ -115,23 +124,20 @@ const Index = () => {
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             {filters.map(f => (
-              <button
-                key={f.value}
-                onClick={() => handleFilterChange(f.value)}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium font-mono transition-colors border ${
-                  filter === f.value
-                    ? "bg-primary/10 border-primary/30 text-primary"
-                    : "bg-transparent border-border text-muted-foreground hover:text-foreground hover:border-foreground/20"
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
+                <button
+                  key={f.value}
+                  onClick={() => handleFilterChange(f.value)}
+                  className={`px-3 py-1.5 rounded-md text-xs font-medium font-mono transition-colors border ${
+                    filter === f.value
+                      ? filterStyles[f.value].active
+                      : "bg-transparent border-border text-muted-foreground hover:text-foreground hover:border-foreground/20"
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
           </div>
-          <span className="ml-auto text-xs text-muted-foreground font-mono">
-            {totalItems} file(s)
-          </span>
-        </div>
 
         <QueueTable
           items={items}
