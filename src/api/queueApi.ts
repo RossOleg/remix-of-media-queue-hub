@@ -239,20 +239,18 @@ export function buildAccentPalette(hex: string, isLight: boolean): AccentPalette
 
   // Achromatic or near-white/near-black: inject some saturation
   if (s < 8) {
-    // Use a neutral blue-grey hue if the original is truly achromatic
     h = h || 210;
-    s = 15;
+    s = 25;
   }
 
   // Ensure minimum saturation for vibrancy
-  s = Math.max(s, 20);
+  s = Math.max(s, 25);
 
   if (isLight) {
-    // Light theme: we need the accent dark enough to read on white (~#fff)
-    // Target lightness 35–48 for good contrast
-    if (l > 48) l = 48;
-    if (l < 25) l = 35;
-    // Clamp saturation so it doesn't look washed out
+    // Light theme: accent must be dark enough to read on white (~#fff)
+    // Target lightness 30–42 for strong contrast
+    if (l > 42) l = 38;
+    if (l < 20) l = 30;
     s = Math.min(s, 90);
   } else {
     // Dark theme: accent must be bright enough on dark bg (~#242424)
