@@ -75,9 +75,9 @@ export const SORT_KEY_TO_INT: Record<SortKey, number> = {
   name: 1,
   fileSize: 2,
   inQueueSince: 3,
-  started: 6,
-  ended: 5,
   lastAttempt: 4,
+  ended: 5,
+  started: 6,
 };
 
 export interface FetchItemsParams {

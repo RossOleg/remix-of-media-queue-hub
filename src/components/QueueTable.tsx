@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { RotateCcw, ChevronLeft, ChevronRight, ArrowUp, ArrowDown, ArrowUpDown, ImageOff } from "lucide-react";
+import { RotateCcw, ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
 import { StatusBadge } from "./StatusBadge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PARENT_BASE } from "@/lib/config";
-import type { QueueItem, SortKey } from "@/api/queueApi";
+import type { QueueItem } from "@/api/queueApi";
 
 function getThumbUrl(guid: string): string {
   const g = guid.toLowerCase();
@@ -51,18 +51,10 @@ interface Props {
   page: number;
   pageSize: number;
   totalItems: number;
-  sortKey: SortKey | null;
-  sortDir: "asc" | "desc";
   onPageChange: (page: number) => void;
-  onSort: (key: SortKey | null, dir: "asc" | "desc") => void;
 }
 
-const cols: { key: SortKey | null; label: string; className?: string }[] = [
-  { key: "name", label: "File" },
-  { key: null, label: "Status" },
-  { key: null, label: "Progress", className: "w-36" },
-  { key: "fileSize", label: "Size" },
-];
+const cols = ["File", "Status", "Progress", "Size", "Error"];
 
 export function QueueTable({
   items,
@@ -71,28 +63,9 @@ export function QueueTable({
   page,
   pageSize,
   totalItems,
-  sortKey,
-  sortDir,
   onPageChange,
-  onSort,
 }: Props) {
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
-
-  function toggleSort(key: SortKey) {
-    if (sortKey === key) {
-      if (sortDir === "asc") onSort(key, "desc");
-      else onSort(null, "asc");
-    } else {
-      onSort(key, "asc");
-    }
-  }
-
-  function SortIcon({ col }: { col: SortKey }) {
-    if (sortKey !== col) return <ArrowUpDown className="h-3 w-3 opacity-0 group-hover:opacity-50 transition-opacity" />;
-    return sortDir === "asc"
-      ? <ArrowUp className="h-3 w-3 text-primary" />
-      : <ArrowDown className="h-3 w-3 text-primary" />;
-  }
 
   if (error) {
     return (
@@ -184,21 +157,14 @@ export function QueueTable({
           <thead>
             <tr className="border-b border-border bg-muted/50">
               <th className="px-3 py-3 w-16"></th>
-              {cols.map(c => (
+              {cols.map(label => (
                 <th
-                  key={c.key ?? c.label}
-                  onClick={c.key ? () => toggleSort(c.key!) : undefined}
-                  className={`px-4 py-3 text-left font-medium text-muted-foreground select-none transition-colors ${c.key ? "cursor-pointer group hover:text-foreground" : ""} ${c.className ?? ""}`}
+                  key={label}
+                  className={`px-4 py-3 text-left font-medium text-muted-foreground ${label === "Progress" ? "w-36" : ""}`}
                 >
-                  <span className="flex items-center gap-1.5">
-                    {c.label}
-                    {c.key && <SortIcon col={c.key} />}
-                  </span>
+                  {label}
                 </th>
               ))}
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                Error
-              </th>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground"></th>
             </tr>
           </thead>
@@ -216,7 +182,7 @@ export function QueueTable({
               ))
             ) : items.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-4 py-12 text-center text-muted-foreground font-mono text-sm">
+                <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground font-mono text-sm">
                   No files
                 </td>
               </tr>
