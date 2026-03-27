@@ -152,25 +152,96 @@ export async function fetchAdditionalCustomColor(): Promise<string> {
   return json.data; // hex color
 }
 
-export function hexToHsl(hex: string): string {
+/* ── Predefined accent palettes ── */
+
+interface BrandPalette {
+  /** Reference hex for matching */
+  ref: string;
+  light: { primary: string; primaryFg: string };
+  dark:  { primary: string; primaryFg: string };
+}
+
+/**
+ * Curated palettes — each tested for readability on light (#fff) and dark (#242424) backgrounds.
+ * Covers the full hue wheel + neutral fallback.
+ */
+const PALETTES: BrandPalette[] = [
+  // Neutral / grey (fallback for whites, blacks, greys)
+  { ref: "#78909c", light: { primary: "200 18% 40%", primaryFg: "0 0% 100%" }, dark: { primary: "200 18% 65%", primaryFg: "0 0% 10%" } },
+  // Blue
+  { ref: "#1976d2", light: { primary: "210 79% 46%", primaryFg: "0 0% 100%" }, dark: { primary: "210 79% 65%", primaryFg: "0 0% 10%" } },
+  // Indigo
+  { ref: "#3949ab", light: { primary: "231 44% 44%", primaryFg: "0 0% 100%" }, dark: { primary: "231 44% 68%", primaryFg: "0 0% 10%" } },
+  // Purple
+  { ref: "#8e24aa", light: { primary: "287 66% 40%", primaryFg: "0 0% 100%" }, dark: { primary: "287 50% 68%", primaryFg: "0 0% 10%" } },
+  // Pink
+  { ref: "#d81b60", light: { primary: "340 78% 47%", primaryFg: "0 0% 100%" }, dark: { primary: "340 65% 65%", primaryFg: "0 0% 10%" } },
+  // Red
+  { ref: "#e53935", light: { primary: "1 76% 55%", primaryFg: "0 0% 100%" }, dark: { primary: "1 70% 65%", primaryFg: "0 0% 10%" } },
+  // Orange
+  { ref: "#fb8c00", light: { primary: "33 97% 40%", primaryFg: "0 0% 100%" }, dark: { primary: "33 90% 60%", primaryFg: "0 0% 10%" } },
+  // Amber
+  { ref: "#f9a825", light: { primary: "43 95% 42%", primaryFg: "0 0% 10%" }, dark: { primary: "43 85% 58%", primaryFg: "0 0% 10%" } },
+  // Green
+  { ref: "#43a047", light: { primary: "123 40% 44%", primaryFg: "0 0% 100%" }, dark: { primary: "123 38% 58%", primaryFg: "0 0% 10%" } },
+  // Teal
+  { ref: "#00897b", light: { primary: "174 100% 27%", primaryFg: "0 0% 100%" }, dark: { primary: "174 60% 52%", primaryFg: "0 0% 10%" } },
+  // Cyan
+  { ref: "#0097a7", light: { primary: "187 100% 33%", primaryFg: "0 0% 100%" }, dark: { primary: "187 70% 55%", primaryFg: "0 0% 10%" } },
+  // Light blue
+  { ref: "#039be5", light: { primary: "199 97% 45%", primaryFg: "0 0% 100%" }, dark: { primary: "199 80% 62%", primaryFg: "0 0% 10%" } },
+  // Brown
+  { ref: "#6d4c41", light: { primary: "16 25% 34%", primaryFg: "0 0% 100%" }, dark: { primary: "16 25% 58%", primaryFg: "0 0% 10%" } },
+  // Blue grey
+  { ref: "#546e7a", light: { primary: "200 18% 40%", primaryFg: "0 0% 100%" }, dark: { primary: "200 18% 62%", primaryFg: "0 0% 10%" } },
+];
+
+function hexToRgb(hex: string): [number, number, number] {
   hex = hex.replace(/^#/, "");
   if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
-  const r = parseInt(hex.substring(0, 2), 16) / 255;
-  const g = parseInt(hex.substring(2, 4), 16) / 255;
-  const b = parseInt(hex.substring(4, 6), 16) / 255;
-  const max = Math.max(r, g, b), min = Math.min(r, g, b);
-  let h = 0, s = 0;
-  const l = (max + min) / 2;
-  if (max !== min) {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    switch (max) {
-      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
-      case g: h = ((b - r) / d + 2) / 6; break;
-      case b: h = ((r - g) / d + 4) / 6; break;
+  return [
+    parseInt(hex.substring(0, 2), 16),
+    parseInt(hex.substring(2, 4), 16),
+    parseInt(hex.substring(4, 6), 16),
+  ];
+}
+
+function colorDistance(a: [number, number, number], b: [number, number, number]): number {
+  // Weighted Euclidean distance (human eye is more sensitive to green)
+  const dr = a[0] - b[0];
+  const dg = a[1] - b[1];
+  const db = a[2] - b[2];
+  return 2 * dr * dr + 4 * dg * dg + 3 * db * db;
+}
+
+export interface MatchedPalette {
+  primary: string;
+  primaryForeground: string;
+}
+
+/**
+ * Find the closest predefined palette to the given hex color.
+ * Returns HSL values ready for CSS variables.
+ */
+export function matchPalette(hex: string, isLight: boolean): MatchedPalette {
+  const input = hexToRgb(hex);
+  let best = PALETTES[0];
+  let bestDist = Infinity;
+
+  for (const p of PALETTES) {
+    const ref = hexToRgb(p.ref);
+    const dist = colorDistance(input, ref);
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = p;
     }
   }
-  return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
+
+  const scheme = isLight ? best.light : best.dark;
+  return {
+    primary: scheme.primary,
+    primaryForeground: scheme.primaryFg,
+  };
 }
 
 export function mapRawItem(raw: AIQueueItemRaw): QueueItem {
