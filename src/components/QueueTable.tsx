@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { RotateCcw, ChevronLeft, ChevronRight, ImageOff } from "lucide-react";
+import { RotateCcw, ChevronLeft, ChevronRight, ImageOff, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 import { StatusBadge } from "./StatusBadge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PARENT_BASE } from "@/lib/config";
-import type { QueueItem } from "@/api/queueApi";
+import type { QueueItem, SortKey } from "@/api/queueApi";
 
 function getThumbUrl(guid: string): string {
   const g = guid.toLowerCase();
@@ -52,7 +52,18 @@ interface Props {
   pageSize: number;
   totalItems: number;
   onPageChange: (page: number) => void;
+  sortBy: SortKey | null;
+  sortOrder: 0 | 1;
+  onSort: (key: SortKey) => void;
 }
+
+const sortableCols: Record<string, SortKey | null> = {
+  File: "name",
+  Status: null,
+  Progress: null,
+  Size: "fileSize",
+  Error: null,
+};
 
 const cols = ["File", "Status", "Progress", "Size", "Error"];
 
@@ -64,6 +75,9 @@ export function QueueTable({
   pageSize,
   totalItems,
   onPageChange,
+  sortBy,
+  sortOrder,
+  onSort,
 }: Props) {
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
@@ -157,14 +171,28 @@ export function QueueTable({
           <thead>
             <tr className="border-b border-border bg-muted/50">
               <th className="px-3 py-3 w-16"></th>
-              {cols.map(label => (
-                <th
-                  key={label}
-                  className={`px-4 py-3 text-left font-medium text-muted-foreground ${label === "Progress" ? "w-36" : ""}`}
-                >
-                  {label}
-                </th>
-              ))}
+              {cols.map(label => {
+                const sortKey = sortableCols[label];
+                const isActive = sortKey && sortBy === sortKey;
+                return (
+                  <th
+                    key={label}
+                    className={`px-4 py-3 text-left font-medium text-muted-foreground ${label === "Progress" ? "w-36" : ""} ${sortKey ? "cursor-pointer select-none hover:text-foreground transition-colors" : ""}`}
+                    onClick={sortKey ? () => onSort(sortKey) : undefined}
+                  >
+                    <span className="inline-flex items-center gap-1">
+                      {label}
+                      {sortKey && (
+                        isActive
+                          ? sortOrder === 0
+                            ? <ArrowUp className="h-3 w-3" />
+                            : <ArrowDown className="h-3 w-3" />
+                          : <ArrowUpDown className="h-3 w-3 opacity-30" />
+                      )}
+                    </span>
+                  </th>
+                );
+              })}
               <th className="px-4 py-3 text-left font-medium text-muted-foreground"></th>
             </tr>
           </thead>
