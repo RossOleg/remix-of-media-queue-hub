@@ -41,6 +41,8 @@ const Index = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [authConfirmed, setAuthConfirmed] = useState(false);
+  const [sortBy, setSortBy] = useState<SortKey | null>(null);
+  const [sortOrder, setSortOrder] = useState<0 | 1>(0); // 0=asc, 1=desc
 
   const { data: apiStats, isLoading: statsLoading, error: statsError } = useQuery({
     queryKey: ["queueStatus"],
@@ -54,15 +56,15 @@ const Index = () => {
   }
 
   const { data: itemsData, isLoading: itemsLoading, error: itemsError } = useQuery({
-    queryKey: ["queueItems", filter, search, page],
+    queryKey: ["queueItems", filter, search, page, sortBy, sortOrder],
     queryFn: () =>
       fetchQueueItems({
         status: STATUS_TO_INT[filter] ?? -1,
         searchText: search,
         pageIndex: page,
         pageSize: PAGE_SIZE,
-        sortBy: 0,
-        sortOrder: 0,
+        sortBy: sortBy ? SORT_KEY_TO_INT[sortBy] : 0,
+        sortOrder,
       }),
     refetchInterval: 5000,
   });
