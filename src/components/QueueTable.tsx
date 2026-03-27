@@ -59,13 +59,20 @@ interface Props {
 
 const sortableCols: Record<string, SortKey | null> = {
   File: "name",
+  Type: null,
   Status: null,
   Progress: null,
   Size: "fileSize",
   Error: null,
 };
 
-const cols = ["File", "Status", "Progress", "Size", "Error"];
+const cols = ["File", "Type", "Status", "Progress", "Size", "Error"];
+
+function splitFileName(name: string): { baseName: string; ext: string } {
+  const dotIdx = name.lastIndexOf(".");
+  if (dotIdx <= 0) return { baseName: name, ext: "" };
+  return { baseName: name.substring(0, dotIdx), ext: name.substring(dotIdx + 1).toUpperCase() };
+}
 
 export function QueueTable({
   items,
@@ -201,7 +208,7 @@ export function QueueTable({
               Array.from({ length: pageSize }, (_, i) => (
                 <tr key={i} className="border-b border-border/50">
                   <td className="px-4 py-3"><Skeleton className="h-10 w-10 rounded" /></td>
-                  {Array.from({ length: 6 }, (_, j) => (
+                  {Array.from({ length: 7 }, (_, j) => (
                     <td key={j} className="px-4 py-3">
                       <Skeleton className="h-4 w-full" />
                     </td>
@@ -210,7 +217,7 @@ export function QueueTable({
               ))
             ) : items.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground font-mono text-sm">
+                <td colSpan={8} className="px-4 py-12 text-center text-muted-foreground font-mono text-sm">
                   No files
                 </td>
               </tr>
@@ -220,16 +227,26 @@ export function QueueTable({
                   <td className="px-3 py-2">
                     <ThumbPreview guid={item.id} />
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 max-w-[350px]">
                     <div>
-                      <a
-                        href={`${PARENT_BASE}/?open=${item.mediaItemId}`}
-                        className="font-mono text-xs text-primary hover:underline truncate max-w-[200px] block"
-                      >
-                        {item.fileName}
-                      </a>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <a
+                            href={`${PARENT_BASE}/?open=${item.mediaItemId}`}
+                            className="font-mono text-xs text-primary hover:underline truncate block"
+                          >
+                            {splitFileName(item.fileName).baseName}
+                          </a>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-md font-mono text-xs">
+                          {item.fileName}
+                        </TooltipContent>
+                      </Tooltip>
                       <p className="text-[10px] text-muted-foreground font-mono">ID: {item.mediaItemId}</p>
                     </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="font-mono text-xs text-muted-foreground">{splitFileName(item.fileName).ext || "—"}</span>
                   </td>
                   <td className="px-4 py-3">
                     {(item.status === "failed" || item.status === "waitingForProcessAfterFail") && item.error ? (
