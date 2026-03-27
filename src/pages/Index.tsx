@@ -38,12 +38,18 @@ const Index = () => {
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
+  const [authConfirmed, setAuthConfirmed] = useState(false);
 
   const { data: apiStats, isLoading: statsLoading, error: statsError } = useQuery({
     queryKey: ["queueStatus"],
     queryFn: fetchQueueStatus,
     refetchInterval: 5000,
   });
+
+  // Once we get a successful stats response, auth is confirmed
+  if (apiStats && !authConfirmed) {
+    setAuthConfirmed(true);
+  }
 
   const { data: itemsData, isLoading: itemsLoading, error: itemsError } = useQuery({
     queryKey: ["queueItems", filter, search, page],
@@ -71,6 +77,15 @@ const Index = () => {
     setSearch(value);
     setPage(0);
   }, []);
+
+  // Don't render UI until auth is confirmed (prevents flash before 401 redirect)
+  if (!authConfirmed && statsLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="h-6 w-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
