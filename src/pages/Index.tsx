@@ -1,6 +1,6 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Activity, Search } from "lucide-react";
+import { Activity, Search, X, Sun, Moon } from "lucide-react";
 import {
   fetchQueueStatus,
   fetchQueueItems,
