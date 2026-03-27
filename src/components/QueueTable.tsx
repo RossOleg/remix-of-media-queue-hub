@@ -171,14 +171,28 @@ export function QueueTable({
           <thead>
             <tr className="border-b border-border bg-muted/50">
               <th className="px-3 py-3 w-16"></th>
-              {cols.map(label => (
-                <th
-                  key={label}
-                  className={`px-4 py-3 text-left font-medium text-muted-foreground ${label === "Progress" ? "w-36" : ""}`}
-                >
-                  {label}
-                </th>
-              ))}
+              {cols.map(label => {
+                const sortKey = sortableCols[label];
+                const isActive = sortKey && sortBy === sortKey;
+                return (
+                  <th
+                    key={label}
+                    className={`px-4 py-3 text-left font-medium text-muted-foreground ${label === "Progress" ? "w-36" : ""} ${sortKey ? "cursor-pointer select-none hover:text-foreground transition-colors" : ""}`}
+                    onClick={sortKey ? () => onSort(sortKey) : undefined}
+                  >
+                    <span className="inline-flex items-center gap-1">
+                      {label}
+                      {sortKey && (
+                        isActive
+                          ? sortOrder === 0
+                            ? <ArrowUp className="h-3 w-3" />
+                            : <ArrowDown className="h-3 w-3" />
+                          : <ArrowUpDown className="h-3 w-3 opacity-30" />
+                      )}
+                    </span>
+                  </th>
+                );
+              })}
               <th className="px-4 py-3 text-left font-medium text-muted-foreground"></th>
             </tr>
           </thead>
