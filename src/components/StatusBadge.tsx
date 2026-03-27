@@ -29,9 +29,10 @@ interface StatusBadgeProps {
   startedAt?: string;
   completedAt?: string;
   lastAttempt?: string;
+  trailing?: React.ReactNode;
 }
 
-export function StatusBadge({ status, queuedAt, startedAt, completedAt, lastAttempt }: StatusBadgeProps) {
+export function StatusBadge({ status, queuedAt, startedAt, completedAt, lastAttempt, trailing }: StatusBadgeProps) {
   const c = config[status];
 
   const dateMap: Record<FileStatus, { date: string | undefined; label: string }> = {
@@ -47,9 +48,12 @@ export function StatusBadge({ status, queuedAt, startedAt, completedAt, lastAtte
 
   return (
     <div className="flex flex-col gap-0.5">
-      <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-mono font-medium w-fit ${c.className}`}>
-        <span className={`h-1.5 w-1.5 rounded-full ${dotClass[status]}`} />
-        {c.label}
+      <span className="inline-flex items-center gap-1.5">
+        <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-mono font-medium ${c.className}`}>
+          <span className={`h-1.5 w-1.5 rounded-full ${dotClass[status]}`} />
+          {c.label}
+        </span>
+        {trailing}
       </span>
       {formatted && (
         <span className="text-[10px] font-mono text-muted-foreground pl-1">{label}: {formatted}</span>
