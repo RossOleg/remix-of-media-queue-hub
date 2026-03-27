@@ -74,8 +74,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center gap-3">
+      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-overlay">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-3">
           <div className="h-8 w-8 rounded-md bg-primary/10 flex items-center justify-center">
             <Activity className="h-4 w-4 text-primary" />
           </div>
@@ -107,7 +107,7 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-8 space-y-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-4 sm:space-y-6">
         <QueueStatsCards apiStats={apiStats ?? null} isLoading={statsLoading} error={statsError} />
 
         {/* Search & Filters */}
