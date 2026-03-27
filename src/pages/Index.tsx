@@ -14,6 +14,15 @@ import { QueueTable } from "@/components/QueueTable";
 
 type Filter = "all" | FileStatus;
 
+const filterStyles: Record<Filter, { active: string }> = {
+  all: { active: "bg-foreground/10 border-foreground/30 text-foreground" },
+  waiting: { active: "bg-secondary border-border text-secondary-foreground" },
+  processing: { active: "bg-warning/15 border-warning/30 text-warning" },
+  processed: { active: "bg-success/15 border-success/30 text-success" },
+  failed: { active: "bg-destructive/15 border-destructive/30 text-destructive" },
+  waitingForProcessAfterFail: { active: "bg-primary/10 border-primary/30 text-primary" },
+};
+
 const filters: { value: Filter; label: string }[] = [
   { value: "all", label: "All" },
   { value: "waiting", label: "Waiting" },
