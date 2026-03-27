@@ -124,23 +124,20 @@ const Index = () => {
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             {filters.map(f => (
-              <button
-                key={f.value}
-                onClick={() => handleFilterChange(f.value)}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium font-mono transition-colors border ${
-                  filter === f.value
-                    ? "bg-primary/10 border-primary/30 text-primary"
-                    : "bg-transparent border-border text-muted-foreground hover:text-foreground hover:border-foreground/20"
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
+                <button
+                  key={f.value}
+                  onClick={() => handleFilterChange(f.value)}
+                  className={`px-3 py-1.5 rounded-md text-xs font-medium font-mono transition-colors border ${
+                    filter === f.value
+                      ? filterStyles[f.value].active
+                      : "bg-transparent border-border text-muted-foreground hover:text-foreground hover:border-foreground/20"
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
           </div>
-          <span className="ml-auto text-xs text-muted-foreground font-mono">
-            {totalItems} file(s)
-          </span>
-        </div>
 
         <QueueTable
           items={items}
