@@ -75,6 +75,9 @@ export function QueueTable({
   pageSize,
   totalItems,
   onPageChange,
+  sortBy,
+  sortOrder,
+  onSort,
 }: Props) {
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
