@@ -1,10 +1,14 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Activity, Search, X, Sun, Moon } from "lucide-react";
+import { Activity, Search, X } from "lucide-react";
 import { PARENT_BASE } from "@/lib/config";
 import {
   fetchQueueStatus,
   fetchQueueItems,
+  fetchCustomScheme,
+  fetchCustomColor,
+  fetchAdditionalCustomColor,
+  hexToHsl,
   mapRawItem,
   STATUS_TO_INT,
   SORT_KEY_TO_INT,
@@ -54,6 +58,34 @@ const Index = () => {
   if (apiStats && !authConfirmed) {
     setAuthConfirmed(true);
   }
+
+  // Branding: theme from API
+  const { data: isLightTheme } = useQuery({
+    queryKey: ["branding", "scheme"],
+    queryFn: fetchCustomScheme,
+    staleTime: Infinity,
+  });
+
+  useEffect(() => {
+    if (isLightTheme === undefined) return;
+    document.documentElement.classList.toggle("dark", !isLightTheme);
+  }, [isLightTheme]);
+
+  // Branding: accent color from API
+  const { data: accentColor } = useQuery({
+    queryKey: ["branding", "accentColor", isLightTheme],
+    queryFn: () => isLightTheme ? fetchCustomColor() : fetchAdditionalCustomColor(),
+    enabled: isLightTheme !== undefined,
+    staleTime: Infinity,
+  });
+
+  useEffect(() => {
+    if (!accentColor) return;
+    const hsl = hexToHsl(accentColor);
+    document.documentElement.style.setProperty("--primary", hsl);
+    document.documentElement.style.setProperty("--ring", hsl);
+    document.documentElement.style.setProperty("--sidebar-primary", hsl);
+  }, [accentColor]);
 
   const { data: itemsData, isLoading: itemsLoading, error: itemsError } = useQuery({
     queryKey: ["queueItems", filter, search, page, sortBy, sortOrder],
@@ -113,18 +145,6 @@ const Index = () => {
             <p className="text-xs text-muted-foreground font-mono">AI Processing Pipeline</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <button
-              onClick={() => {
-                const html = document.documentElement;
-                const isDark = html.classList.contains("dark");
-                html.classList.toggle("dark", !isDark);
-              }}
-              className="h-8 w-8 rounded-md bg-secondary flex items-center justify-center text-secondary-foreground hover:bg-accent transition-colors"
-              title="Toggle theme"
-            >
-              <Sun className="h-4 w-4 dark:hidden" />
-              <Moon className="h-4 w-4 hidden dark:block" />
-            </button>
             <button
               onClick={() => { window.close(); setTimeout(() => { window.location.href = PARENT_BASE || "/"; }, 100); }}
               className="h-8 w-8 rounded-md bg-secondary flex items-center justify-center text-secondary-foreground hover:bg-destructive hover:text-destructive-foreground transition-colors"
