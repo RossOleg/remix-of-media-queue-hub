@@ -52,7 +52,18 @@ interface Props {
   pageSize: number;
   totalItems: number;
   onPageChange: (page: number) => void;
+  sortBy: SortKey | null;
+  sortOrder: 0 | 1;
+  onSort: (key: SortKey) => void;
 }
+
+const sortableCols: Record<string, SortKey | null> = {
+  File: "name",
+  Status: null,
+  Progress: null,
+  Size: "fileSize",
+  Error: null,
+};
 
 const cols = ["File", "Status", "Progress", "Size", "Error"];
 
