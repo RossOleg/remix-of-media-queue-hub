@@ -145,7 +145,7 @@ export function QueueTable({
                     href={`${PARENT_BASE}/?open=${item.mediaItemId}`}
                     className="font-mono text-xs text-primary hover:underline truncate block"
                   >
-                    {item.fileName}
+                    {splitFileName(item.fileName).baseName}
                   </a>
                   <p className="text-[10px] text-muted-foreground font-mono">ID: {item.mediaItemId}</p>
                   <div className="mt-1">
