@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Activity, Search, X, Sun, Moon } from "lucide-react";
 import { PARENT_BASE } from "@/lib/config";
@@ -7,9 +7,9 @@ import {
   fetchQueueItems,
   mapRawItem,
   STATUS_TO_INT,
+  SORT_KEY_TO_INT,
   type FileStatus,
   type SortKey,
-  type QueueItem,
 } from "@/api/queueApi";
 import { QueueStatsCards } from "@/components/QueueStatsCards";
 import { QueueTable } from "@/components/QueueTable";
@@ -27,27 +27,6 @@ const filters: { value: Filter; label: string }[] = [
 
 const PAGE_SIZE = 50;
 
-const STATUS_ORDER: Record<string, number> = {
-  processing: 0, waiting: 1, waitingForProcessAfterFail: 2, processed: 3, failed: 4,
-};
-
-function sortItems(items: QueueItem[], key: SortKey | null, dir: "asc" | "desc"): QueueItem[] {
-  if (!key) return items;
-  const sorted = [...items].sort((a, b) => {
-    let cmp = 0;
-    switch (key) {
-      case "name": cmp = a.fileName.localeCompare(b.fileName); break;
-      case "status": cmp = (STATUS_ORDER[a.status] ?? 99) - (STATUS_ORDER[b.status] ?? 99); break;
-      case "totalProgress": cmp = a.progress - b.progress; break;
-      case "fileSize": cmp = a.fileSizeBytes - b.fileSizeBytes; break;
-      case "error": cmp = (a.error ?? "").localeCompare(b.error ?? ""); break;
-      default: cmp = 0;
-    }
-    return cmp;
-  });
-  return dir === "desc" ? sorted.reverse() : sorted;
-}
-
 const Index = () => {
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
@@ -62,21 +41,20 @@ const Index = () => {
   });
 
   const { data: itemsData, isLoading: itemsLoading, error: itemsError } = useQuery({
-    queryKey: ["queueItems", filter, search, page],
+    queryKey: ["queueItems", filter, search, page, sortKey, sortDir],
     queryFn: () =>
       fetchQueueItems({
         status: STATUS_TO_INT[filter] ?? -1,
         searchText: search,
         pageIndex: page,
         pageSize: PAGE_SIZE,
-        sortBy: 0,
-        sortOrder: 0,
+        sortBy: sortKey ? SORT_KEY_TO_INT[sortKey] : 0,
+        sortOrder: sortDir === "asc" ? 0 : 1,
       }),
     refetchInterval: 5000,
   });
 
-  const rawItems = useMemo(() => itemsData?.data?.items?.map(mapRawItem) ?? [], [itemsData]);
-  const items = useMemo(() => sortItems(rawItems, sortKey, sortDir), [rawItems, sortKey, sortDir]);
+  const items = itemsData?.data?.items?.map(mapRawItem) ?? [];
   const totalItems = itemsData?.data?.totalItems ?? 0;
 
   const handleFilterChange = useCallback((f: Filter) => {
