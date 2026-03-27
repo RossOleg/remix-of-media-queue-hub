@@ -57,22 +57,11 @@ interface Props {
   onSort: (key: SortKey | null, dir: "asc" | "desc") => void;
 }
 
-function formatDate(iso?: string | null): string {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  if (isNaN(d.getTime())) return "—";
-  return d.toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
-}
-
 const cols: { key: SortKey | null; label: string; className?: string }[] = [
   { key: "name", label: "File" },
   { key: null, label: "Status" },
-  { key: "totalProgress", label: "Progress", className: "w-32" },
+  { key: "totalProgress", label: "Progress", className: "w-36" },
   { key: "fileSize", label: "Size" },
-  { key: "inQueueSince", label: "Queued" },
-  { key: "started", label: "Started" },
-  { key: "ended", label: "Completed" },
-  { key: "lastAttempt", label: "Last Attempt" },
 ];
 
 export function QueueTable({
@@ -216,7 +205,7 @@ export function QueueTable({
               Array.from({ length: pageSize }, (_, i) => (
                 <tr key={i} className="border-b border-border/50">
                   <td className="px-4 py-3"><Skeleton className="h-10 w-10 rounded" /></td>
-                  {Array.from({ length: 10 }, (_, j) => (
+                  {Array.from({ length: 6 }, (_, j) => (
                     <td key={j} className="px-4 py-3">
                       <Skeleton className="h-4 w-full" />
                     </td>
@@ -225,7 +214,7 @@ export function QueueTable({
               ))
             ) : items.length === 0 ? (
               <tr>
-                <td colSpan={12} className="px-4 py-12 text-center text-muted-foreground font-mono text-sm">
+                <td colSpan={8} className="px-4 py-12 text-center text-muted-foreground font-mono text-sm">
                   No files
                 </td>
               </tr>
@@ -270,18 +259,6 @@ export function QueueTable({
                   </td>
                   <td className="px-4 py-3">
                     <span className="font-mono text-xs text-muted-foreground">{item.fileSize}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="font-mono text-[10px] text-muted-foreground whitespace-nowrap">{formatDate(item.queuedAt)}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="font-mono text-[10px] text-muted-foreground whitespace-nowrap">{formatDate(item.startedAt)}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="font-mono text-[10px] text-muted-foreground whitespace-nowrap">{formatDate(item.completedAt)}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="font-mono text-[10px] text-muted-foreground whitespace-nowrap">{formatDate(item.lastAttempt)}</span>
                   </td>
                   <td className="px-4 py-3">
                     {item.error ? (
