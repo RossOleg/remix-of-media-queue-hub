@@ -7,7 +7,9 @@ import {
   fetchQueueItems,
   mapRawItem,
   STATUS_TO_INT,
+  SORT_KEY_TO_INT,
   type FileStatus,
+  type SortKey,
 } from "@/api/queueApi";
 import { QueueStatsCards } from "@/components/QueueStatsCards";
 import { QueueTable } from "@/components/QueueTable";
