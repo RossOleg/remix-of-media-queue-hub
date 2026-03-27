@@ -141,21 +141,16 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-overlay">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-3">
-          <div className="h-8 w-8 rounded-md bg-primary/10 flex items-center justify-center">
-            <Activity className="h-4 w-4 text-primary" />
-          </div>
+          <button
+            onClick={() => { window.close(); setTimeout(() => { window.location.href = PARENT_BASE || "/"; }, 100); }}
+            className="h-8 w-8 rounded-md bg-secondary flex items-center justify-center text-secondary-foreground hover:bg-accent transition-colors"
+            title="Back"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </button>
           <div>
             <h1 className="text-lg font-semibold text-foreground tracking-tight">Media Queue</h1>
             <p className="text-xs text-muted-foreground font-mono">AI Processing Pipeline</p>
-          </div>
-          <div className="ml-auto flex items-center gap-2">
-            <button
-              onClick={() => { window.close(); setTimeout(() => { window.location.href = PARENT_BASE || "/"; }, 100); }}
-              className="h-8 w-8 rounded-md bg-secondary flex items-center justify-center text-secondary-foreground hover:bg-destructive hover:text-destructive-foreground transition-colors"
-              title="Close"
-            >
-              <X className="h-4 w-4" />
-            </button>
           </div>
         </div>
       </header>
