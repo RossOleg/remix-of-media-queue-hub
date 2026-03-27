@@ -80,12 +80,20 @@ const Index = () => {
   });
 
   useEffect(() => {
-    if (!accentColor) return;
-    const hsl = hexToHsl(accentColor);
-    document.documentElement.style.setProperty("--primary", hsl);
-    document.documentElement.style.setProperty("--ring", hsl);
-    document.documentElement.style.setProperty("--sidebar-primary", hsl);
-  }, [accentColor]);
+    if (!accentColor || isLightTheme === undefined) return;
+    const palette = buildAccentPalette(accentColor, isLightTheme);
+    const root = document.documentElement.style;
+    root.setProperty("--primary", palette.primary);
+    root.setProperty("--primary-foreground", palette.primaryForeground);
+    root.setProperty("--accent", palette.accent);
+    root.setProperty("--accent-foreground", palette.accentForeground);
+    root.setProperty("--ring", palette.ring);
+    root.setProperty("--sidebar-primary", palette.primary);
+    root.setProperty("--sidebar-primary-foreground", palette.primaryForeground);
+    root.setProperty("--sidebar-accent", palette.accent);
+    root.setProperty("--sidebar-accent-foreground", palette.accentForeground);
+    root.setProperty("--sidebar-ring", palette.ring);
+  }, [accentColor, isLightTheme]);
 
   const { data: itemsData, isLoading: itemsLoading, error: itemsError } = useQuery({
     queryKey: ["queueItems", filter, search, page, sortBy, sortOrder],
