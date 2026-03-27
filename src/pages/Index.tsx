@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Activity, Search, X, Sun, Moon } from "lucide-react";
 import { PARENT_BASE } from "@/lib/config";
@@ -7,9 +7,7 @@ import {
   fetchQueueItems,
   mapRawItem,
   STATUS_TO_INT,
-  SORT_KEY_TO_INT,
   type FileStatus,
-  type SortKey,
 } from "@/api/queueApi";
 import { QueueStatsCards } from "@/components/QueueStatsCards";
 import { QueueTable } from "@/components/QueueTable";
@@ -31,8 +29,6 @@ const Index = () => {
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
-  const [sortKey, setSortKey] = useState<SortKey | null>(null);
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
   const { data: apiStats, isLoading: statsLoading, error: statsError } = useQuery({
     queryKey: ["queueStatus"],
@@ -41,15 +37,15 @@ const Index = () => {
   });
 
   const { data: itemsData, isLoading: itemsLoading, error: itemsError } = useQuery({
-    queryKey: ["queueItems", filter, search, page, sortKey, sortDir],
+    queryKey: ["queueItems", filter, search, page],
     queryFn: () =>
       fetchQueueItems({
         status: STATUS_TO_INT[filter] ?? -1,
         searchText: search,
         pageIndex: page,
         pageSize: PAGE_SIZE,
-        sortBy: sortKey ? SORT_KEY_TO_INT[sortKey] : 0,
-        sortOrder: sortDir === "asc" ? 0 : 1,
+        sortBy: 0,
+        sortOrder: 0,
       }),
     refetchInterval: 5000,
   });
@@ -64,12 +60,6 @@ const Index = () => {
 
   const handleSearchChange = useCallback((value: string) => {
     setSearch(value);
-    setPage(0);
-  }, []);
-
-  const handleSort = useCallback((key: SortKey | null, dir: "asc" | "desc") => {
-    setSortKey(key);
-    setSortDir(dir);
     setPage(0);
   }, []);
 
@@ -150,10 +140,7 @@ const Index = () => {
           page={page}
           pageSize={PAGE_SIZE}
           totalItems={totalItems}
-          sortKey={sortKey}
-          sortDir={sortDir}
           onPageChange={setPage}
-          onSort={handleSort}
         />
       </main>
     </div>
