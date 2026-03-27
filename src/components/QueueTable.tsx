@@ -59,8 +59,8 @@ interface Props {
 
 const cols: { key: SortKey | null; label: string; className?: string }[] = [
   { key: "name", label: "File" },
-  { key: "status", label: "Status" },
-  { key: "totalProgress", label: "Progress", className: "w-36" },
+  { key: null, label: "Status" },
+  { key: null, label: "Progress", className: "w-36" },
   { key: "fileSize", label: "Size" },
 ];
 
@@ -196,14 +196,8 @@ export function QueueTable({
                   </span>
                 </th>
               ))}
-              <th
-                onClick={() => toggleSort("error" as SortKey)}
-                className="px-4 py-3 text-left font-medium text-muted-foreground select-none cursor-pointer group hover:text-foreground transition-colors"
-              >
-                <span className="flex items-center gap-1.5">
-                  Error
-                  <SortIcon col={"error" as SortKey} />
-                </span>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                Error
               </th>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground"></th>
             </tr>

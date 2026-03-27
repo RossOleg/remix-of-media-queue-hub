@@ -69,18 +69,15 @@ export const INT_TO_STATUS: Record<number, FileStatus> = {
   5: "failed",
 };
 
-export type SortKey = "name" | "status" | "totalProgress" | "fileSize" | "inQueueSince" | "started" | "ended" | "lastAttempt" | "error";
+export type SortKey = "name" | "fileSize" | "inQueueSince" | "started" | "ended" | "lastAttempt";
 
 export const SORT_KEY_TO_INT: Record<SortKey, number> = {
   name: 1,
-  status: 7,
-  totalProgress: 8,
   fileSize: 2,
   inQueueSince: 3,
   started: 6,
   ended: 5,
   lastAttempt: 4,
-  error: 9,
 };
 
 export interface FetchItemsParams {
