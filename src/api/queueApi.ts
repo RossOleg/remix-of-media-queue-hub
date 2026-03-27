@@ -1,10 +1,5 @@
 import { API_BASE } from "@/lib/config";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
-import {
-  argbFromHex,
-  themeFromSourceColor,
-  hexFromArgb,
-} from "@material/material-color-utilities";
 
 /* ── Queue Status ── */
 
@@ -157,52 +152,7 @@ export async function fetchAdditionalCustomColor(): Promise<string> {
   return json.data; // hex color
 }
 
-/**
- * Material Design 3 palette generation using HCT color space.
- * Converts a source hex color into accessible accent tokens
- * for both light and dark themes.
- */
-
-function argbToHsl(argb: number): string {
-  const r = ((argb >> 16) & 0xff) / 255;
-  const g = ((argb >> 8) & 0xff) / 255;
-  const b = (argb & 0xff) / 255;
-  const max = Math.max(r, g, b), min = Math.min(r, g, b);
-  let h = 0, s = 0;
-  const l = (max + min) / 2;
-  if (max !== min) {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    switch (max) {
-      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
-      case g: h = ((b - r) / d + 2) / 6; break;
-      case b: h = ((r - g) / d + 4) / 6; break;
-    }
-  }
-  return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
-}
-
-export interface AccentPalette {
-  primary: string;
-  primaryForeground: string;
-  accent: string;
-  accentForeground: string;
-  ring: string;
-}
-
-export function buildAccentPalette(hex: string, isLight: boolean): AccentPalette {
-  const sourceArgb = argbFromHex(hex.startsWith("#") ? hex : `#${hex}`);
-  const theme = themeFromSourceColor(sourceArgb);
-  const scheme = isLight ? theme.schemes.light : theme.schemes.dark;
-
-  return {
-    primary: argbToHsl(scheme.primary),
-    primaryForeground: argbToHsl(scheme.onPrimary),
-    accent: argbToHsl(scheme.secondaryContainer),
-    accentForeground: argbToHsl(scheme.onSecondaryContainer),
-    ring: argbToHsl(scheme.primary),
-  };
-}
+export { buildAccentPalette, type AccentPalette } from "@/lib/materialColor";
 
 export function mapRawItem(raw: AIQueueItemRaw): QueueItem {
   const mainStatus = raw.status?.[0] ?? 0;
