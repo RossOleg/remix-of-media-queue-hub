@@ -264,6 +264,15 @@ export function QueueTable({
                       )}
                     </div>
                   </td>
+                  <td className="px-4 py-3 w-36">
+                    <div className="flex items-center gap-2">
+                      <Progress value={item.progress} className="h-1.5 flex-1" />
+                      <span className="font-mono text-xs text-muted-foreground w-8 text-right">{item.progress}%</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <span className="font-mono text-xs text-muted-foreground">{item.fileSize}</span>
+                  </td>
                   <td className="px-4 py-3">
                     {(item.status === "failed" || item.status === "waitingForProcessAfterFail") && (
                       <button className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="Retry">
