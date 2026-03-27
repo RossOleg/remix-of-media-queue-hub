@@ -82,6 +82,16 @@ const Index = () => {
     setPage(0);
   }, []);
 
+  const handleSort = useCallback((key: SortKey) => {
+    if (sortBy === key) {
+      setSortOrder(prev => (prev === 0 ? 1 : 0));
+    } else {
+      setSortBy(key);
+      setSortOrder(0);
+    }
+    setPage(0);
+  }, [sortBy]);
+
   // Don't render UI until auth is confirmed (prevents flash before 401 redirect)
   if (!authConfirmed && statsLoading) {
     return (
