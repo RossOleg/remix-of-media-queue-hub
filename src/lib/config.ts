@@ -37,4 +37,4 @@ export const BASE_PATH = getBasePath();
 export const API_BASE = `${PARENT_BASE}/api`;
 
 /** Parent login URL for 401 redirects */
-export const LOGIN_URL = `${PARENT_BASE}/login`;
+export const LOGIN_URL = `${PARENT_BASE}/Account/Login`;
