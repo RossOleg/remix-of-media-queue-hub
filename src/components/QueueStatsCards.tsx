@@ -29,14 +29,14 @@ export function QueueStatsCards({ apiStats, isLoading, error }: Props) {
   }
 
   return (
-    <div className="flex flex-wrap gap-x-4 gap-y-1">
+    <div className="grid grid-cols-6 gap-2">
       {stats.map(s => (
-        <div key={s.label} className="flex items-baseline gap-1.5">
+        <div key={s.label} className="rounded-lg bg-card p-2 text-center">
           <span className="text-xs text-muted-foreground">{s.label}</span>
           {isLoading ? (
-            <Skeleton className="h-5 w-8" />
+            <Skeleton className="mx-auto mt-1 h-6 w-10" />
           ) : (
-            <span className="text-sm font-mono font-bold text-card-foreground">{s.value}</span>
+            <p className="mt-0.5 text-lg font-mono font-bold text-card-foreground">{s.value}</p>
           )}
         </div>
       ))}
