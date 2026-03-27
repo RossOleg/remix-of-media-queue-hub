@@ -12,12 +12,12 @@ export function QueueStatsCards({ apiStats, isLoading, error }: Props) {
   const total = d ? d.waiting + d.processing + d.processed + d.failed : 0;
 
   const stats = [
-    { label: "Total", value: total },
-    { label: "Waiting", value: d?.waiting ?? 0 },
-    { label: "Processing", value: d?.processing ?? 0 },
-    { label: "Processed", value: d?.processed ?? 0 },
-    { label: "Failed", value: d?.failed ?? 0 },
-    { label: "Retry", value: d?.waitingForProcessAfterError ?? 0 },
+    { label: "Waiting", value: d?.waiting ?? 0, accent: null },
+    { label: "Processing", value: d?.processing ?? 0, accent: "bg-blue-500/15 text-blue-400" },
+    { label: "Failed", value: d?.failed ?? 0, accent: "bg-destructive/15 text-destructive" },
+    { label: "Retry", value: d?.waitingForProcessAfterError ?? 0, accent: "bg-orange-500/15 text-orange-400" },
+    { label: "Processed", value: d?.processed ?? 0, accent: null },
+    { label: "Total", value: total, accent: null },
   ];
 
   if (error) {
@@ -31,7 +31,7 @@ export function QueueStatsCards({ apiStats, isLoading, error }: Props) {
   return (
     <div className="grid grid-cols-6 gap-2">
       {stats.map(s => (
-        <div key={s.label} className="rounded-lg bg-card p-2 text-center">
+        <div key={s.label} className={`rounded-lg p-2 text-center ${s.accent && s.value > 0 ? s.accent : "bg-card"}`}>
           <span className="text-[10px] uppercase tracking-widest text-muted-foreground">{s.label}</span>
           {isLoading ? (
             <Skeleton className="mx-auto mt-1 h-7 w-12" />
