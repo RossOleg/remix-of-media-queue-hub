@@ -74,9 +74,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
+      <header className="sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center gap-3">
-          <div className="h-8 w-8 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center">
+          <div className="h-8 w-8 rounded-md bg-primary/10 flex items-center justify-center">
             <Activity className="h-4 w-4 text-primary" />
           </div>
           <div>
@@ -84,8 +84,25 @@ const Index = () => {
             <p className="text-xs text-muted-foreground font-mono">AI Processing Pipeline</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-success status-pulse" />
-            <span className="text-xs text-muted-foreground font-mono">system active</span>
+            <button
+              onClick={() => {
+                const html = document.documentElement;
+                const isDark = html.classList.contains("dark");
+                html.classList.toggle("dark", !isDark);
+              }}
+              className="h-8 w-8 rounded-md bg-secondary flex items-center justify-center text-secondary-foreground hover:bg-accent transition-colors"
+              title="Toggle theme"
+            >
+              <Sun className="h-4 w-4 dark:hidden" />
+              <Moon className="h-4 w-4 hidden dark:block" />
+            </button>
+            <button
+              onClick={() => window.close()}
+              className="h-8 w-8 rounded-md bg-secondary flex items-center justify-center text-secondary-foreground hover:bg-destructive hover:text-destructive-foreground transition-colors"
+              title="Close"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </div>
         </div>
       </header>
