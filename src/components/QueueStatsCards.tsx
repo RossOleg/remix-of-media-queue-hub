@@ -13,12 +13,12 @@ export function QueueStatsCards({ apiStats, isLoading, error }: Props) {
   const total = d ? d.waiting + d.processing + d.processed + d.failed : 0;
 
   const stats = [
-    { label: "Total", value: total, icon: FileStack, className: "glow-primary border-primary/20" },
-    { label: "Waiting", value: d?.waiting ?? 0, icon: Clock, className: "border-border" },
-    { label: "Processing", value: d?.processing ?? 0, icon: Loader, className: "glow-warning border-warning/20" },
-    { label: "Processed", value: d?.processed ?? 0, icon: CheckCircle, className: "glow-success border-success/20" },
-    { label: "Failed", value: d?.failed ?? 0, icon: AlertTriangle, className: "glow-destructive border-destructive/20" },
-    { label: "Retry Pending", value: d?.waitingForProcessAfterError ?? 0, icon: RefreshCw, className: "border-primary/20" },
+    { label: "Total", value: total, icon: FileStack, className: "" },
+    { label: "Waiting", value: d?.waiting ?? 0, icon: Clock, className: "" },
+    { label: "Processing", value: d?.processing ?? 0, icon: Loader, className: "" },
+    { label: "Processed", value: d?.processed ?? 0, icon: CheckCircle, className: "" },
+    { label: "Failed", value: d?.failed ?? 0, icon: AlertTriangle, className: "" },
+    { label: "Retry Pending", value: d?.waitingForProcessAfterError ?? 0, icon: RefreshCw, className: "" },
   ];
 
   if (error) {
