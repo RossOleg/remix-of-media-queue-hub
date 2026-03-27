@@ -249,12 +249,16 @@ export function QueueTable({
                     <span className="font-mono text-xs text-muted-foreground">{splitFileName(item.fileName).ext || "—"}</span>
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <StatusBadge status={item.status} queuedAt={item.queuedAt} startedAt={item.startedAt} completedAt={item.completedAt} lastAttempt={item.lastAttempt} />
-                      {item.error && (
+                    <StatusBadge
+                      status={item.status}
+                      queuedAt={item.queuedAt}
+                      startedAt={item.startedAt}
+                      completedAt={item.completedAt}
+                      lastAttempt={item.lastAttempt}
+                      trailing={item.error ? (
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <span className="inline-flex cursor-help ml-auto">
+                            <span className="inline-flex cursor-help">
                               <AlertCircle className="h-4 w-4 text-destructive" />
                             </span>
                           </TooltipTrigger>
@@ -262,8 +266,8 @@ export function QueueTable({
                             {item.error}
                           </TooltipContent>
                         </Tooltip>
-                      )}
-                    </div>
+                      ) : undefined}
+                    />
                   </td>
                   <td className="px-4 py-3 w-36">
                     <div className="flex items-center gap-2">
