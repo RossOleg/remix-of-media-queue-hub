@@ -38,12 +38,18 @@ const Index = () => {
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
+  const [authConfirmed, setAuthConfirmed] = useState(false);
 
   const { data: apiStats, isLoading: statsLoading, error: statsError } = useQuery({
     queryKey: ["queueStatus"],
     queryFn: fetchQueueStatus,
     refetchInterval: 5000,
   });
+
+  // Once we get a successful stats response, auth is confirmed
+  if (apiStats && !authConfirmed) {
+    setAuthConfirmed(true);
+  }
 
   const { data: itemsData, isLoading: itemsLoading, error: itemsError } = useQuery({
     queryKey: ["queueItems", filter, search, page],
