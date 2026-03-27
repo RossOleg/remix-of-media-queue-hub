@@ -176,6 +176,9 @@ const Index = () => {
           pageSize={PAGE_SIZE}
           totalItems={totalItems}
           onPageChange={setPage}
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          onSort={handleSort}
         />
       </main>
     </div>
