@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Activity, Search, X, Sun, Moon } from "lucide-react";
+import { PARENT_BASE } from "@/lib/config";
 import {
   fetchQueueStatus,
   fetchQueueItems,
@@ -97,7 +98,7 @@ const Index = () => {
               <Moon className="h-4 w-4 hidden dark:block" />
             </button>
             <button
-              onClick={() => window.close()}
+              onClick={() => { window.close(); setTimeout(() => { window.location.href = PARENT_BASE || "/"; }, 100); }}
               className="h-8 w-8 rounded-md bg-secondary flex items-center justify-center text-secondary-foreground hover:bg-destructive hover:text-destructive-foreground transition-colors"
               title="Close"
             >
