@@ -60,7 +60,7 @@ export function ErrorDetailDialog({ open, onOpenChange, fileName, mediaItemId, e
             <AlertCircle className="h-4 w-4 text-destructive shrink-0" />
             Processing Error
           </DialogTitle>
-          <DialogDescription className="font-mono text-xs truncate">
+          <DialogDescription className="font-mono text-xs break-all">
             {fileName} (ID: {mediaItemId})
           </DialogDescription>
         </DialogHeader>
