@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { RotateCcw, ChevronLeft, ChevronRight, ImageOff, ArrowUp, ArrowDown, ArrowUpDown, AlertCircle } from "lucide-react";
 import { StatusBadge } from "./StatusBadge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -88,6 +88,33 @@ export function QueueTable({
 }: Props) {
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
   const [errorDialogItem, setErrorDialogItem] = useState<QueueItem | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [paginationVisible, setPaginationVisible] = useState(true);
+  const lastScrollTop = useRef(0);
+
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const { scrollTop, scrollHeight, clientHeight } = el;
+    const isAtBottom = scrollTop + clientHeight >= scrollHeight - 16;
+    const isScrollingDown = scrollTop > lastScrollTop.current;
+    lastScrollTop.current = scrollTop;
+
+    if (isAtBottom) {
+      setPaginationVisible(true);
+    } else if (isScrollingDown) {
+      setPaginationVisible(false);
+    } else {
+      setPaginationVisible(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", handleScroll, { passive: true });
+    return () => el.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
 
   if (error) {
     return (
@@ -98,9 +125,187 @@ export function QueueTable({
   }
 
   return (
-    <div className="rounded-lg bg-card overflow-hidden">
+    <div className="rounded-lg bg-card overflow-hidden flex flex-col h-full">
+      {/* Mobile card view */}
+      <div ref={scrollRef} className="flex-1 overflow-y-auto">
+        <div className="block md:hidden divide-y divide-border">
+          {isLoading ? (
+            Array.from({ length: 5 }, (_, i) => (
+              <div key={i} className="p-4 space-y-2">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+                <Skeleton className="h-1.5 w-full" />
+              </div>
+            ))
+          ) : items.length === 0 ? (
+            <div className="px-4 py-12 text-center text-muted-foreground font-mono text-sm">
+              No files
+            </div>
+          ) : (
+            items.map(item => (
+              <div key={item.id} className="p-4 space-y-2">
+                <div className="flex items-start gap-3">
+                  <ThumbPreview guid={item.id} />
+                  <div className="flex-1 min-w-0">
+                    <a
+                      href={`${PARENT_BASE}/?open=${item.mediaItemId}`}
+                      className="font-mono text-xs text-primary hover:underline truncate block"
+                    >
+                      {splitFileName(item.fileName).baseName}
+                    </a>
+                    <p className="text-[10px] text-muted-foreground font-mono">ID: {item.mediaItemId}</p>
+                    <div className="mt-1">
+                      <StatusBadge status={item.status} queuedAt={item.queuedAt} startedAt={item.startedAt} completedAt={item.completedAt} lastAttempt={item.lastAttempt} />
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Progress value={item.progress} className="h-1.5 flex-1" />
+                  <span className="font-mono text-xs text-muted-foreground w-8 text-right">{item.progress}%</span>
+                  <span className="font-mono text-xs text-muted-foreground">{item.fileSize}</span>
+                </div>
+                {item.error && (
+                  <button
+                    onClick={() => setErrorDialogItem(item)}
+                    className="flex items-center gap-1 font-mono text-[10px] text-destructive hover:underline truncate"
+                  >
+                    <AlertCircle className="h-3 w-3 shrink-0" />
+                    <span className="truncate">{item.error}</span>
+                  </button>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop table view */}
+        <div className="hidden md:block">
+          <table className="w-full text-sm">
+            <thead className="sticky top-0 z-10">
+              <tr className="border-b border-border bg-muted/50">
+                <th className="px-3 py-3 w-[60px]"></th>
+                {cols.map(label => {
+                  const sortKey = sortableCols[label];
+                  const isActive = sortKey && sortBy === sortKey;
+                  return (
+                    <th
+                      key={label}
+                      className={`px-4 py-3 text-left font-medium text-muted-foreground ${label === "Progress" ? "w-36" : ""} ${sortKey ? "cursor-pointer select-none hover:text-foreground transition-colors" : ""}`}
+                      onClick={sortKey ? () => onSort(sortKey) : undefined}
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        {label}
+                        {sortKey && (
+                          isActive
+                            ? sortOrder === 0
+                              ? <ArrowUp className="h-3 w-3" />
+                              : <ArrowDown className="h-3 w-3" />
+                            : <ArrowUpDown className="h-3 w-3 opacity-30" />
+                        )}
+                      </span>
+                    </th>
+                  );
+                })}
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                Array.from({ length: pageSize }, (_, i) => (
+                  <tr key={i} className="border-b border-border/50">
+                    <td className="px-4 py-3"><Skeleton className="h-10 w-10 rounded" /></td>
+                    {Array.from({ length: 5 }, (_, j) => (
+                      <td key={j} className="px-4 py-3">
+                        <Skeleton className="h-4 w-full" />
+                      </td>
+                    ))}
+                    <td className="px-4 py-3"></td>
+                  </tr>
+                ))
+              ) : items.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground font-mono text-sm">
+                    No files
+                  </td>
+                </tr>
+              ) : (
+                items.map(item => (
+                  <tr key={item.id} className="border-b border-border/50 hover:bg-accent/50 transition-colors">
+                    <td className="px-3 py-2">
+                      <ThumbPreview guid={item.id} />
+                    </td>
+                    <td className="px-4 py-3 max-w-[450px]">
+                      <div>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <a
+                              href={`${PARENT_BASE}/?open=${item.mediaItemId}`}
+                              className="font-mono text-xs text-primary hover:underline truncate block"
+                            >
+                              {splitFileName(item.fileName).baseName}
+                            </a>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-md font-mono text-xs">
+                            {item.fileName}
+                          </TooltipContent>
+                        </Tooltip>
+                        <p className="text-[10px] text-muted-foreground font-mono">ID: {item.mediaItemId}</p>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="font-mono text-xs text-muted-foreground">{splitFileName(item.fileName).ext || "—"}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <StatusBadge
+                        status={item.status}
+                        queuedAt={item.queuedAt}
+                        startedAt={item.startedAt}
+                        completedAt={item.completedAt}
+                        lastAttempt={item.lastAttempt}
+                        trailing={item.error ? (
+                          <button
+                            onClick={() => setErrorDialogItem(item)}
+                            className="inline-flex cursor-pointer hover:opacity-80 transition-opacity"
+                          >
+                            <AlertCircle className="h-4 w-4 text-destructive" />
+                          </button>
+                        ) : undefined}
+                      />
+                    </td>
+                    <td className="px-4 py-3 w-36">
+                      <div className="flex items-center gap-2">
+                        <Progress value={item.progress} className="h-1.5 flex-1" />
+                        <span className="font-mono text-xs text-muted-foreground w-8 text-right">{item.progress}%</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <span className="font-mono text-xs text-muted-foreground">{item.fileSize}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      {(item.status === "failed" || item.status === "waitingForProcessAfterFail") && !item.error && (
+                        <button
+                          onClick={() => setErrorDialogItem(item)}
+                          className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
+                          title="Retry"
+                        >
+                          <RotateCcw className="h-3.5 w-3.5" />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       {totalPages > 1 && (
-        <div className="flex items-center justify-between border-b border-border px-4 py-3">
+        <div
+          className={`flex items-center justify-between border-t border-border px-4 py-3 bg-card transition-all duration-300 ${
+            paginationVisible ? "max-h-16 opacity-100" : "max-h-0 opacity-0 overflow-hidden py-0 border-t-0"
+          }`}
+        >
           <span className="text-xs text-muted-foreground font-mono">
             Page {page + 1} of {totalPages} ({page * pageSize + 1}–{Math.min((page + 1) * pageSize, totalItems)} of {totalItems})
           </span>
@@ -122,178 +327,6 @@ export function QueueTable({
           </div>
         </div>
       )}
-
-      {/* Mobile card view */}
-      <div className="block md:hidden divide-y divide-border">
-        {isLoading ? (
-          Array.from({ length: 5 }, (_, i) => (
-            <div key={i} className="p-4 space-y-2">
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-3 w-1/2" />
-              <Skeleton className="h-1.5 w-full" />
-            </div>
-          ))
-        ) : items.length === 0 ? (
-          <div className="px-4 py-12 text-center text-muted-foreground font-mono text-sm">
-            No files
-          </div>
-        ) : (
-          items.map(item => (
-            <div key={item.id} className="p-4 space-y-2">
-              <div className="flex items-start gap-3">
-                <ThumbPreview guid={item.id} />
-                <div className="flex-1 min-w-0">
-                  <a
-                    href={`${PARENT_BASE}/?open=${item.mediaItemId}`}
-                    className="font-mono text-xs text-primary hover:underline truncate block"
-                  >
-                    {splitFileName(item.fileName).baseName}
-                  </a>
-                  <p className="text-[10px] text-muted-foreground font-mono">ID: {item.mediaItemId}</p>
-                  <div className="mt-1">
-                    <StatusBadge status={item.status} queuedAt={item.queuedAt} startedAt={item.startedAt} completedAt={item.completedAt} lastAttempt={item.lastAttempt} />
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Progress value={item.progress} className="h-1.5 flex-1" />
-                <span className="font-mono text-xs text-muted-foreground w-8 text-right">{item.progress}%</span>
-                <span className="font-mono text-xs text-muted-foreground">{item.fileSize}</span>
-              </div>
-              {item.error && (
-                <button
-                  onClick={() => setErrorDialogItem(item)}
-                  className="flex items-center gap-1 font-mono text-[10px] text-destructive hover:underline truncate"
-                >
-                  <AlertCircle className="h-3 w-3 shrink-0" />
-                  <span className="truncate">{item.error}</span>
-                </button>
-              )}
-            </div>
-          ))
-        )}
-      </div>
-
-      {/* Desktop table view */}
-      <div className="hidden md:block overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border bg-muted/50">
-              <th className="px-3 py-3 w-[60px]"></th>
-              {cols.map(label => {
-                const sortKey = sortableCols[label];
-                const isActive = sortKey && sortBy === sortKey;
-                return (
-                  <th
-                    key={label}
-                    className={`px-4 py-3 text-left font-medium text-muted-foreground ${label === "Progress" ? "w-36" : ""} ${sortKey ? "cursor-pointer select-none hover:text-foreground transition-colors" : ""}`}
-                    onClick={sortKey ? () => onSort(sortKey) : undefined}
-                  >
-                    <span className="inline-flex items-center gap-1">
-                      {label}
-                      {sortKey && (
-                        isActive
-                          ? sortOrder === 0
-                            ? <ArrowUp className="h-3 w-3" />
-                            : <ArrowDown className="h-3 w-3" />
-                          : <ArrowUpDown className="h-3 w-3 opacity-30" />
-                      )}
-                    </span>
-                  </th>
-                );
-              })}
-              <th className="px-4 py-3 text-left font-medium text-muted-foreground"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
-              Array.from({ length: pageSize }, (_, i) => (
-                <tr key={i} className="border-b border-border/50">
-                  <td className="px-4 py-3"><Skeleton className="h-10 w-10 rounded" /></td>
-                  {Array.from({ length: 5 }, (_, j) => (
-                    <td key={j} className="px-4 py-3">
-                      <Skeleton className="h-4 w-full" />
-                    </td>
-                  ))}
-                  <td className="px-4 py-3"></td>
-                </tr>
-              ))
-            ) : items.length === 0 ? (
-              <tr>
-                <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground font-mono text-sm">
-                  No files
-                </td>
-              </tr>
-            ) : (
-              items.map(item => (
-                <tr key={item.id} className="border-b border-border/50 hover:bg-accent/50 transition-colors">
-                  <td className="px-3 py-2">
-                    <ThumbPreview guid={item.id} />
-                  </td>
-                  <td className="px-4 py-3 max-w-[450px]">
-                    <div>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <a
-                            href={`${PARENT_BASE}/?open=${item.mediaItemId}`}
-                            className="font-mono text-xs text-primary hover:underline truncate block"
-                          >
-                            {splitFileName(item.fileName).baseName}
-                          </a>
-                        </TooltipTrigger>
-                        <TooltipContent side="top" className="max-w-md font-mono text-xs">
-                          {item.fileName}
-                        </TooltipContent>
-                      </Tooltip>
-                      <p className="text-[10px] text-muted-foreground font-mono">ID: {item.mediaItemId}</p>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="font-mono text-xs text-muted-foreground">{splitFileName(item.fileName).ext || "—"}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <StatusBadge
-                      status={item.status}
-                      queuedAt={item.queuedAt}
-                      startedAt={item.startedAt}
-                      completedAt={item.completedAt}
-                      lastAttempt={item.lastAttempt}
-                      trailing={item.error ? (
-                        <button
-                          onClick={() => setErrorDialogItem(item)}
-                          className="inline-flex cursor-pointer hover:opacity-80 transition-opacity"
-                        >
-                          <AlertCircle className="h-4 w-4 text-destructive" />
-                        </button>
-                      ) : undefined}
-                    />
-                  </td>
-                  <td className="px-4 py-3 w-36">
-                    <div className="flex items-center gap-2">
-                      <Progress value={item.progress} className="h-1.5 flex-1" />
-                      <span className="font-mono text-xs text-muted-foreground w-8 text-right">{item.progress}%</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <span className="font-mono text-xs text-muted-foreground">{item.fileSize}</span>
-                  </td>
-                  <td className="px-4 py-3">
-                    {(item.status === "failed" || item.status === "waitingForProcessAfterFail") && !item.error && (
-                      <button
-                        onClick={() => setErrorDialogItem(item)}
-                        className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
-                        title="Retry"
-                      >
-                        <RotateCcw className="h-3.5 w-3.5" />
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
 
       <ErrorDetailDialog
         open={!!errorDialogItem}

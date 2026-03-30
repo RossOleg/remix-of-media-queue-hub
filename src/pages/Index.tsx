@@ -121,7 +121,7 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-screen flex flex-col bg-background overflow-hidden">
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-overlay">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-3">
           <button
@@ -148,7 +148,7 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-4 sm:space-y-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-4 sm:gap-6 flex-1 min-h-0">
         <QueueStatsCards
           apiStats={apiStats ?? null}
           isLoading={statsLoading}
@@ -157,18 +157,20 @@ const Index = () => {
           onFilterChange={handleFilterChange}
         />
 
-        <QueueTable
-          items={items}
-          isLoading={itemsLoading}
-          error={itemsError}
-          page={page}
-          pageSize={PAGE_SIZE}
-          totalItems={totalItems}
-          onPageChange={setPage}
-          sortBy={sortBy}
-          sortOrder={sortOrder}
-          onSort={handleSort}
-        />
+        <div className="flex-1 min-h-0">
+          <QueueTable
+            items={items}
+            isLoading={itemsLoading}
+            error={itemsError}
+            page={page}
+            pageSize={PAGE_SIZE}
+            totalItems={totalItems}
+            onPageChange={setPage}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            onSort={handleSort}
+          />
+        </div>
       </main>
     </div>
   );
