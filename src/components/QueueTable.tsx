@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { RotateCcw, ChevronLeft, ChevronRight, ImageOff, ArrowUp, ArrowDown, ArrowUpDown, AlertCircle } from "lucide-react";
 import { StatusBadge } from "./StatusBadge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
