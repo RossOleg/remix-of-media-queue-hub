@@ -89,7 +89,7 @@ export function QueueTable({
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
   const [errorDialogItem, setErrorDialogItem] = useState<QueueItem | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [paginationVisible, setPaginationVisible] = useState(true);
+  const [paginationPosition, setPaginationPosition] = useState<"top" | "bottom" | "hidden">("top");
   const [showScrollTop, setShowScrollTop] = useState(false);
   const lastScrollTop = useRef(0);
 
@@ -97,18 +97,22 @@ export function QueueTable({
     const el = scrollRef.current;
     if (!el) return;
     const { scrollTop, scrollHeight, clientHeight } = el;
+    const isAtTop = scrollTop < 16;
     const isAtBottom = scrollTop + clientHeight >= scrollHeight - 16;
     const isScrollingDown = scrollTop > lastScrollTop.current;
     const scrollDelta = Math.abs(scrollTop - lastScrollTop.current);
     lastScrollTop.current = scrollTop;
 
-    // Only react to meaningful scrolls (> 5px) to avoid jitter
     if (scrollDelta < 5) return;
 
-    if (isAtBottom || !isScrollingDown) {
-      setPaginationVisible(true);
+    if (isAtTop) {
+      setPaginationPosition("top");
+    } else if (isAtBottom) {
+      setPaginationPosition("bottom");
     } else if (isScrollingDown) {
-      setPaginationVisible(false);
+      setPaginationPosition("hidden");
+    } else {
+      setPaginationPosition("hidden");
     }
 
     setShowScrollTop(scrollTop > 300);
@@ -133,8 +137,36 @@ export function QueueTable({
     );
   }
 
+  const paginationBar = totalPages > 1 ? (
+    <div className="flex items-center justify-between px-4 py-3 bg-card shrink-0">
+      <span className="text-xs text-muted-foreground font-mono">
+        Page {page + 1} of {totalPages} ({page * pageSize + 1}–{Math.min((page + 1) * pageSize, totalItems)} of {totalItems})
+      </span>
+      <div className="flex items-center gap-1">
+        <button
+          onClick={() => onPageChange(Math.max(0, page - 1))}
+          disabled={page === 0}
+          className="p-1.5 rounded-md text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:pointer-events-none transition-colors"
+        >
+          <ChevronLeft className="h-3.5 w-3.5" />
+        </button>
+        <button
+          onClick={() => onPageChange(Math.min(totalPages - 1, page + 1))}
+          disabled={page === totalPages - 1}
+          className="p-1.5 rounded-md text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:pointer-events-none transition-colors"
+        >
+          <ChevronRight className="h-3.5 w-3.5" />
+        </button>
+      </div>
+    </div>
+  ) : null;
+
   return (
     <div className="rounded-lg bg-card overflow-hidden flex flex-col h-full relative">
+      {paginationPosition === "top" && paginationBar && (
+        <div className="border-b border-border animate-in fade-in duration-200">{paginationBar}</div>
+      )}
+
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
         {/* Mobile card view */}
         <div className="block md:hidden divide-y divide-border">
@@ -309,32 +341,8 @@ export function QueueTable({
         </div>
       </div>
 
-      {totalPages > 1 && (
-        <div
-          className={`flex items-center justify-between border-t border-border px-4 py-3 bg-card transition-all duration-300 shrink-0 ${
-            paginationVisible ? "opacity-100" : "max-h-0 opacity-0 overflow-hidden py-0 border-t-0"
-          }`}
-        >
-          <span className="text-xs text-muted-foreground font-mono">
-            Page {page + 1} of {totalPages} ({page * pageSize + 1}–{Math.min((page + 1) * pageSize, totalItems)} of {totalItems})
-          </span>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => onPageChange(Math.max(0, page - 1))}
-              disabled={page === 0}
-              className="p-1.5 rounded-md text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:pointer-events-none transition-colors"
-            >
-              <ChevronLeft className="h-3.5 w-3.5" />
-            </button>
-            <button
-              onClick={() => onPageChange(Math.min(totalPages - 1, page + 1))}
-              disabled={page === totalPages - 1}
-              className="p-1.5 rounded-md text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:pointer-events-none transition-colors"
-            >
-              <ChevronRight className="h-3.5 w-3.5" />
-            </button>
-          </div>
-        </div>
+      {paginationPosition === "bottom" && paginationBar && (
+        <div className="border-t border-border animate-in fade-in duration-200">{paginationBar}</div>
       )}
 
       {/* Scroll to top — desktop only */}
