@@ -88,7 +88,6 @@ export function QueueTable({
 }: Props) {
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
   const [errorDialogItem, setErrorDialogItem] = useState<QueueItem | null>(null);
-  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
   if (error) {
     return (
