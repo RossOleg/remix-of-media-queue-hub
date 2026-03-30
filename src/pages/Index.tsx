@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Search } from "lucide-react";
+import { ArrowLeft, Search, X } from "lucide-react";
 import { PARENT_BASE } from "@/lib/config";
 import {
   fetchQueueStatus,
@@ -29,7 +29,8 @@ const Index = () => {
   const [page, setPage] = useState(0);
   const [authConfirmed, setAuthConfirmed] = useState(false);
   const [sortBy, setSortBy] = useState<SortKey | null>(null);
-  const [sortOrder, setSortOrder] = useState<0 | 1>(0); // 0=asc, 1=desc
+  const [sortOrder, setSortOrder] = useState<0 | 1>(0);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   const { data: apiStats, isLoading: statsLoading, error: statsError } = useQuery({
     queryKey: ["queueStatus"],
@@ -37,12 +38,10 @@ const Index = () => {
     refetchInterval: 5000,
   });
 
-  // Once we get a successful stats response, auth is confirmed
   if (apiStats && !authConfirmed) {
     setAuthConfirmed(true);
   }
 
-  // Branding: theme from API
   const { data: isLightTheme } = useQuery({
     queryKey: ["branding", "scheme"],
     queryFn: fetchCustomScheme,
@@ -54,7 +53,6 @@ const Index = () => {
     document.documentElement.classList.toggle("dark", !isLightTheme);
   }, [isLightTheme]);
 
-  // Branding: accent color from API
   const { data: accentColor } = useQuery({
     queryKey: ["branding", "accentColor", isLightTheme],
     queryFn: () => isLightTheme ? fetchCustomColor() : fetchAdditionalCustomColor(),
@@ -111,7 +109,6 @@ const Index = () => {
     setPage(0);
   }, [sortBy]);
 
-  // Don't render UI until auth is confirmed (prevents flash before 401 redirect)
   if (!authConfirmed && statsLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -122,7 +119,7 @@ const Index = () => {
 
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden">
-      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-overlay">
+      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-overlay shrink-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-3">
           <button
             onClick={() => { window.close(); setTimeout(() => { window.location.href = PARENT_BASE || "/"; }, 100); }}
@@ -135,20 +132,73 @@ const Index = () => {
             <h1 className="text-lg font-semibold text-foreground tracking-tight">Media Queue</h1>
             <p className="text-xs text-muted-foreground font-mono">AI Processing Pipeline</p>
           </div>
-          <div className="relative ml-auto w-full max-w-[286px] sm:max-w-[338px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+
+          {/* Desktop search */}
+          <div className="relative ml-auto hidden md:block w-full max-w-[280px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               type="text"
               value={search}
               onChange={e => handleSearchChange(e.target.value)}
               placeholder="Search by file name…"
-              className="w-full h-8 pl-8 pr-3 rounded-lg text-xs font-mono border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-colors"
+              className="w-full h-10 pl-10 pr-3 rounded-xl text-sm font-mono border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-colors"
             />
           </div>
+
+          {/* Mobile search button */}
+          <button
+            onClick={() => setMobileSearchOpen(true)}
+            className="ml-auto md:hidden h-10 w-10 rounded-xl bg-secondary flex items-center justify-center text-secondary-foreground hover:bg-accent transition-colors shrink-0"
+          >
+            <Search className="h-5 w-5" />
+          </button>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-4 sm:gap-6 flex-1 min-h-0">
+      {/* Mobile fullscreen search overlay */}
+      {mobileSearchOpen && (
+        <div className="fixed inset-0 z-50 bg-background flex flex-col md:hidden animate-in fade-in duration-200">
+          <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
+            <button
+              onClick={() => setMobileSearchOpen(false)}
+              className="h-10 w-10 rounded-xl bg-secondary flex items-center justify-center text-secondary-foreground hover:bg-accent transition-colors shrink-0"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <input
+                type="text"
+                value={search}
+                onChange={e => handleSearchChange(e.target.value)}
+                placeholder="Search by file name…"
+                autoFocus
+                className="w-full h-10 pl-10 pr-3 rounded-xl text-sm font-mono border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-colors"
+              />
+            </div>
+          </div>
+          {search && (
+            <div className="px-4 py-6 text-center">
+              <p className="text-sm text-muted-foreground font-mono">
+                Searching for: <span className="text-foreground">"{search}"</span>
+              </p>
+              <button
+                onClick={() => { setSearch(""); setMobileSearchOpen(false); }}
+                className="mt-3 text-xs text-primary hover:underline font-mono"
+              >
+                Clear & close
+              </button>
+            </div>
+          )}
+          {!search && (
+            <div className="px-4 py-12 text-center">
+              <p className="text-sm text-muted-foreground font-mono">Start typing to search…</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-4 sm:gap-6 flex-1 min-h-0 w-full">
         <QueueStatsCards
           apiStats={apiStats ?? null}
           isLoading={statsLoading}
