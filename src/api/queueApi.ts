@@ -244,6 +244,59 @@ export function matchPalette(hex: string, isLight: boolean): MatchedPalette {
   };
 }
 
+/* ── AI Settings & Retry ── */
+
+export interface AISettings {
+  processGoogle: boolean;
+  processChatGPT: boolean;
+  title: number;
+  description: number;
+  labels: number;
+  objects: number;
+  translate: boolean;
+}
+
+export async function fetchAISettings(): Promise<AISettings> {
+  const res = await fetchWithAuth(
+    `${API_BASE}/settings/getParam?global=true&paramName=cpUpdateGoogleSettings`,
+  );
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  const json = await res.json();
+  const parsed = JSON.parse(json.data);
+  return {
+    processGoogle: parsed.ProcessGoogle,
+    processChatGPT: parsed.ProcessChatGPT,
+    title: parsed.Title,
+    description: parsed.Description,
+    labels: parsed.Labels,
+    objects: parsed.Objects,
+    translate: parsed.Translate,
+  };
+}
+
+export async function retryAIProcessing(
+  mediaItemId: number,
+  settings: AISettings,
+): Promise<void> {
+  const res = await fetchWithAuth(`${API_BASE}/mediaItems/processAILabels`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      ids: [mediaItemId],
+      ai: {
+        processGoogle: settings.processGoogle,
+        processChatGPT: settings.processChatGPT,
+        title: settings.title,
+        description: settings.description,
+        labels: settings.labels,
+        objects: settings.objects,
+        translate: settings.translate,
+      },
+    }),
+  });
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+}
+
 export function mapRawItem(raw: AIQueueItemRaw): QueueItem {
   const mainStatus = raw.status?.[0] ?? 0;
   return {
