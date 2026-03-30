@@ -37,7 +37,7 @@ const Index = () => {
   const { data: apiStats, isLoading: statsLoading, error: statsError } = useQuery({
     queryKey: ["queueStatus"],
     queryFn: fetchQueueStatus,
-    refetchInterval: isVisible ? 10000 : false,
+    refetchInterval: isVisible ? 5000 : false,
   });
 
   if (apiStats && !authConfirmed) {
@@ -85,7 +85,7 @@ const Index = () => {
         sortBy: sortBy ? SORT_KEY_TO_INT[sortBy] : 0,
         sortOrder,
       }),
-    refetchInterval: isVisible ? 10000 : false,
+    refetchInterval: isVisible ? 5000 : false,
   });
 
   const items = itemsData?.data?.items?.map(mapRawItem) ?? [];
