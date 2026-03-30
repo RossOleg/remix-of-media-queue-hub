@@ -161,11 +161,12 @@ export function QueueTable({
                 <span className="font-mono text-xs text-muted-foreground">{item.fileSize}</span>
               </div>
               {item.error && (
-                <p className="font-mono text-[10px] text-destructive truncate">{item.error}</p>
-              )}
-              {(item.status === "failed" || item.status === "waitingForProcessAfterFail") && (
-                <button className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="Retry">
-                  <RotateCcw className="h-3.5 w-3.5" />
+                <button
+                  onClick={() => setErrorDialogItem(item)}
+                  className="flex items-center gap-1 font-mono text-[10px] text-destructive hover:underline truncate"
+                >
+                  <AlertCircle className="h-3 w-3 shrink-0" />
+                  <span className="truncate">{item.error}</span>
                 </button>
               )}
             </div>
@@ -258,16 +259,12 @@ export function QueueTable({
                       completedAt={item.completedAt}
                       lastAttempt={item.lastAttempt}
                       trailing={item.error ? (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="inline-flex cursor-help">
-                              <AlertCircle className="h-4 w-4 text-destructive" />
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="max-w-sm font-mono text-xs bg-destructive/90 text-destructive-foreground border-destructive/50">
-                            {item.error}
-                          </TooltipContent>
-                        </Tooltip>
+                        <button
+                          onClick={() => setErrorDialogItem(item)}
+                          className="inline-flex cursor-pointer hover:opacity-80 transition-opacity"
+                        >
+                          <AlertCircle className="h-4 w-4 text-destructive" />
+                        </button>
                       ) : undefined}
                     />
                   </td>
@@ -281,8 +278,12 @@ export function QueueTable({
                     <span className="font-mono text-xs text-muted-foreground">{item.fileSize}</span>
                   </td>
                   <td className="px-4 py-3">
-                    {(item.status === "failed" || item.status === "waitingForProcessAfterFail") && (
-                      <button className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" title="Retry">
+                    {(item.status === "failed" || item.status === "waitingForProcessAfterFail") && !item.error && (
+                      <button
+                        onClick={() => setErrorDialogItem(item)}
+                        className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
+                        title="Retry"
+                      >
                         <RotateCcw className="h-3.5 w-3.5" />
                       </button>
                     )}
