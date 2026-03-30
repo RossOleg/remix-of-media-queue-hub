@@ -126,40 +126,36 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-3">
           <button
             onClick={() => { window.close(); setTimeout(() => { window.location.href = PARENT_BASE || "/"; }, 100); }}
-            className="h-8 w-8 rounded-md bg-secondary flex items-center justify-center text-secondary-foreground hover:bg-accent transition-colors"
+            className="h-8 w-8 rounded-md bg-secondary flex items-center justify-center text-secondary-foreground hover:bg-accent transition-colors shrink-0"
             title="Back"
           >
             <ArrowLeft className="h-4 w-4" />
           </button>
-          <div>
+          <div className="min-w-0">
             <h1 className="text-lg font-semibold text-foreground tracking-tight">Media Queue</h1>
             <p className="text-xs text-muted-foreground font-mono">AI Processing Pipeline</p>
           </div>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-4 sm:space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-end gap-3">
-          <div className="flex-1 min-w-0">
-            <QueueStatsCards
-              apiStats={apiStats ?? null}
-              isLoading={statsLoading}
-              error={statsError}
-              activeFilter={filter}
-              onFilterChange={handleFilterChange}
-            />
-          </div>
-          <div className="relative w-full sm:w-56 shrink-0">
+          <div className="relative ml-auto w-full max-w-[220px] sm:max-w-[260px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <input
               type="text"
               value={search}
               onChange={e => handleSearchChange(e.target.value)}
-              placeholder="Search by file name…"
-              className="w-full h-9 pl-8 pr-3 rounded-lg text-xs font-mono border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-colors"
+              placeholder="Search…"
+              className="w-full h-8 pl-8 pr-3 rounded-lg text-xs font-mono border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-colors"
             />
           </div>
         </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-4 sm:space-y-6">
+        <QueueStatsCards
+          apiStats={apiStats ?? null}
+          isLoading={statsLoading}
+          error={statsError}
+          activeFilter={filter}
+          onFilterChange={handleFilterChange}
+        />
 
         <QueueTable
           items={items}
