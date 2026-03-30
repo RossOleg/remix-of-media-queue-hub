@@ -54,7 +54,7 @@ export function ErrorDetailDialog({ open, onOpenChange, fileName, mediaItemId, e
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 font-mono text-sm">
             <AlertCircle className="h-4 w-4 text-destructive shrink-0" />
@@ -65,7 +65,7 @@ export function ErrorDetailDialog({ open, onOpenChange, fileName, mediaItemId, e
           </DialogDescription>
         </DialogHeader>
 
-        <div className="rounded-md border border-destructive/30 bg-destructive/5 p-3 max-h-48 overflow-y-auto">
+        <div className="rounded-md border border-destructive/30 bg-destructive/5 p-3 max-h-64 overflow-y-auto">
           <p className="font-mono text-xs text-destructive whitespace-pre-wrap break-words">
             {error}
           </p>
