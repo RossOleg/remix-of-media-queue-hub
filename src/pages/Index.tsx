@@ -141,7 +141,7 @@ const Index = () => {
               type="text"
               value={search}
               onChange={e => handleSearchChange(e.target.value)}
-              placeholder="Search…"
+              placeholder="Search by file name…"
               className="w-full h-8 pl-8 pr-3 rounded-lg text-xs font-mono border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-colors"
             />
           </div>
