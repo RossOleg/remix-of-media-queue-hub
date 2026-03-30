@@ -223,7 +223,7 @@ export function QueueTable({
         <div className="hidden md:block">
           <table className="w-full text-sm">
             <thead className="sticky top-0 z-10">
-              <tr className="border-b border-border bg-muted/50">
+              <tr className="border-b border-border bg-card">
                 <th className="px-3 py-3 w-[60px]"></th>
                 {cols.map(label => {
                   const sortKey = sortableCols[label];
