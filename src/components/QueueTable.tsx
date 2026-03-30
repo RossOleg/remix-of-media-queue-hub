@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { RotateCcw, ChevronLeft, ChevronRight, ImageOff, ArrowUp, ArrowDown, ArrowUpDown, AlertCircle } from "lucide-react";
+import { RotateCcw, ChevronLeft, ChevronRight, ImageOff, ArrowUp, ArrowDown, ArrowUpDown, AlertCircle, ChevronsUp } from "lucide-react";
 import { StatusBadge } from "./StatusBadge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
@@ -90,6 +90,7 @@ export function QueueTable({
   const [errorDialogItem, setErrorDialogItem] = useState<QueueItem | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [paginationVisible, setPaginationVisible] = useState(true);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const lastScrollTop = useRef(0);
 
   const handleScroll = useCallback(() => {
@@ -98,15 +99,19 @@ export function QueueTable({
     const { scrollTop, scrollHeight, clientHeight } = el;
     const isAtBottom = scrollTop + clientHeight >= scrollHeight - 16;
     const isScrollingDown = scrollTop > lastScrollTop.current;
+    const scrollDelta = Math.abs(scrollTop - lastScrollTop.current);
     lastScrollTop.current = scrollTop;
 
-    if (isAtBottom) {
+    // Only react to meaningful scrolls (> 5px) to avoid jitter
+    if (scrollDelta < 5) return;
+
+    if (isAtBottom || !isScrollingDown) {
       setPaginationVisible(true);
     } else if (isScrollingDown) {
       setPaginationVisible(false);
-    } else {
-      setPaginationVisible(true);
     }
+
+    setShowScrollTop(scrollTop > 300);
   }, []);
 
   useEffect(() => {
@@ -115,6 +120,10 @@ export function QueueTable({
     el.addEventListener("scroll", handleScroll, { passive: true });
     return () => el.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
+
+  const scrollToTop = useCallback(() => {
+    scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   if (error) {
     return (
@@ -125,9 +134,9 @@ export function QueueTable({
   }
 
   return (
-    <div className="rounded-lg bg-card overflow-hidden flex flex-col h-full">
-      {/* Mobile card view */}
+    <div className="rounded-lg bg-card overflow-hidden flex flex-col h-full relative">
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
+        {/* Mobile card view */}
         <div className="block md:hidden divide-y divide-border">
           {isLoading ? (
             Array.from({ length: 5 }, (_, i) => (
@@ -302,8 +311,8 @@ export function QueueTable({
 
       {totalPages > 1 && (
         <div
-          className={`flex items-center justify-between border-t border-border px-4 py-3 bg-card transition-all duration-300 ${
-            paginationVisible ? "max-h-16 opacity-100" : "max-h-0 opacity-0 overflow-hidden py-0 border-t-0"
+          className={`flex items-center justify-between border-t border-border px-4 py-3 bg-card transition-all duration-300 shrink-0 ${
+            paginationVisible ? "opacity-100" : "max-h-0 opacity-0 overflow-hidden py-0 border-t-0"
           }`}
         >
           <span className="text-xs text-muted-foreground font-mono">
@@ -326,6 +335,17 @@ export function QueueTable({
             </button>
           </div>
         </div>
+      )}
+
+      {/* Scroll to top — desktop only */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="hidden md:flex absolute bottom-16 right-4 h-10 w-10 rounded-xl bg-secondary items-center justify-center text-secondary-foreground hover:bg-accent transition-all shadow-md z-20"
+          title="Scroll to top"
+        >
+          <ChevronsUp className="h-5 w-5" />
+        </button>
       )}
 
       <ErrorDetailDialog
