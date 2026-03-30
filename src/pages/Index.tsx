@@ -20,23 +20,6 @@ import { QueueTable } from "@/components/QueueTable";
 
 type Filter = "all" | FileStatus;
 
-const filterStyles: Record<Filter, { active: string }> = {
-  all: { active: "bg-foreground/15 border-foreground/40 text-foreground" },
-  waiting: { active: "bg-muted border-foreground/20 text-foreground" },
-  processing: { active: "bg-warning/20 border-warning/40 text-warning" },
-  processed: { active: "bg-success/20 border-success/40 text-success" },
-  failed: { active: "bg-destructive/20 border-destructive/40 text-destructive" },
-  waitingForProcessAfterFail: { active: "bg-primary/15 border-primary/40 text-primary" },
-};
-
-const filters: { value: Filter; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "waiting", label: "Waiting" },
-  { value: "processing", label: "Processing" },
-  { value: "processed", label: "Processed" },
-  { value: "failed", label: "Failed" },
-  { value: "waitingForProcessAfterFail", label: "Retry Pending" },
-];
 
 const PAGE_SIZE = 50;
 
@@ -156,36 +139,27 @@ const Index = () => {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-4 sm:space-y-6">
-        <QueueStatsCards apiStats={apiStats ?? null} isLoading={statsLoading} error={statsError} />
-
-        {/* Search & Filters */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-          <div className="relative w-full sm:w-64">
+        <div className="flex flex-col sm:flex-row sm:items-end gap-3">
+          <div className="flex-1 min-w-0">
+            <QueueStatsCards
+              apiStats={apiStats ?? null}
+              isLoading={statsLoading}
+              error={statsError}
+              activeFilter={filter}
+              onFilterChange={handleFilterChange}
+            />
+          </div>
+          <div className="relative w-full sm:w-56 shrink-0">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <input
               type="text"
               value={search}
               onChange={e => handleSearchChange(e.target.value)}
               placeholder="Search by file name…"
-              className="w-full h-8 pl-8 pr-3 rounded-md text-xs font-mono border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/30 transition-colors"
+              className="w-full h-9 pl-8 pr-3 rounded-lg text-xs font-mono border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-colors"
             />
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            {filters.map(f => (
-                <button
-                  key={f.value}
-                  onClick={() => handleFilterChange(f.value)}
-                  className={`px-3 py-1.5 rounded-md text-xs font-medium font-mono transition-colors border ${
-                    filter === f.value
-                      ? filterStyles[f.value].active
-                      : "bg-transparent border-border text-muted-foreground hover:text-foreground hover:border-foreground/20"
-                  }`}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
-          </div>
+        </div>
 
         <QueueTable
           items={items}
