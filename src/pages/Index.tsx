@@ -119,7 +119,7 @@ const Index = () => {
 
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden">
-      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-overlay shrink-0">
+      <header className="sticky top-0 z-10 bg-background backdrop-blur-overlay shrink-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-3">
           <button
             onClick={() => { window.close(); setTimeout(() => { window.location.href = PARENT_BASE || "/"; }, 100); }}
