@@ -89,7 +89,7 @@ export function QueueTable({
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
   const [errorDialogItem, setErrorDialogItem] = useState<QueueItem | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [paginationVisible, setPaginationVisible] = useState(true);
+  const [paginationPosition, setPaginationPosition] = useState<"top" | "bottom" | "hidden">("top");
   const [showScrollTop, setShowScrollTop] = useState(false);
   const lastScrollTop = useRef(0);
 
@@ -97,18 +97,22 @@ export function QueueTable({
     const el = scrollRef.current;
     if (!el) return;
     const { scrollTop, scrollHeight, clientHeight } = el;
+    const isAtTop = scrollTop < 16;
     const isAtBottom = scrollTop + clientHeight >= scrollHeight - 16;
     const isScrollingDown = scrollTop > lastScrollTop.current;
     const scrollDelta = Math.abs(scrollTop - lastScrollTop.current);
     lastScrollTop.current = scrollTop;
 
-    // Only react to meaningful scrolls (> 5px) to avoid jitter
     if (scrollDelta < 5) return;
 
-    if (isAtBottom || !isScrollingDown) {
-      setPaginationVisible(true);
+    if (isAtTop) {
+      setPaginationPosition("top");
+    } else if (isAtBottom) {
+      setPaginationPosition("bottom");
     } else if (isScrollingDown) {
-      setPaginationVisible(false);
+      setPaginationPosition("hidden");
+    } else {
+      setPaginationPosition("hidden");
     }
 
     setShowScrollTop(scrollTop > 300);
