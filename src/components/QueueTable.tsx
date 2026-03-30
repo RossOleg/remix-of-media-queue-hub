@@ -5,6 +5,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ErrorDetailDialog } from "./ErrorDetailDialog";
 import { PARENT_BASE } from "@/lib/config";
 import type { QueueItem, SortKey } from "@/api/queueApi";
 
