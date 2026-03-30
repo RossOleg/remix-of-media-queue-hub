@@ -294,6 +294,14 @@ export function QueueTable({
           </tbody>
         </table>
       </div>
+
+      <ErrorDetailDialog
+        open={!!errorDialogItem}
+        onOpenChange={(open) => !open && setErrorDialogItem(null)}
+        fileName={errorDialogItem?.fileName ?? ""}
+        mediaItemId={errorDialogItem?.mediaItemId ?? 0}
+        error={errorDialogItem?.error ?? ""}
+      />
     </div>
   );
 }
