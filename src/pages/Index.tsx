@@ -135,7 +135,7 @@ const Index = () => {
             <h1 className="text-lg font-semibold text-foreground tracking-tight">Media Queue</h1>
             <p className="text-xs text-muted-foreground font-mono">AI Processing Pipeline</p>
           </div>
-          <div className="relative ml-auto w-full max-w-[220px] sm:max-w-[260px]">
+          <div className="relative ml-auto w-full max-w-[286px] sm:max-w-[338px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <input
               type="text"
