@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Search, X } from "lucide-react";
+import { usePageVisibility } from "@/hooks/use-page-visibility";
 import { PARENT_BASE } from "@/lib/config";
 import {
   fetchQueueStatus,
@@ -31,11 +32,12 @@ const Index = () => {
   const [sortBy, setSortBy] = useState<SortKey | null>(null);
   const [sortOrder, setSortOrder] = useState<0 | 1>(0);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const isVisible = usePageVisibility();
 
   const { data: apiStats, isLoading: statsLoading, error: statsError } = useQuery({
     queryKey: ["queueStatus"],
     queryFn: fetchQueueStatus,
-    refetchInterval: 5000,
+    refetchInterval: isVisible ? 10000 : false,
   });
 
   if (apiStats && !authConfirmed) {
@@ -83,7 +85,7 @@ const Index = () => {
         sortBy: sortBy ? SORT_KEY_TO_INT[sortBy] : 0,
         sortOrder,
       }),
-    refetchInterval: 5000,
+    refetchInterval: isVisible ? 10000 : false,
   });
 
   const items = itemsData?.data?.items?.map(mapRawItem) ?? [];
