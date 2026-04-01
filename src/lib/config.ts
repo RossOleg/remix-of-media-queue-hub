@@ -17,9 +17,11 @@ function getBasePath(): string {
   // Use the full baseURI pathname (minus trailing slash) as the router basename
   return base.pathname.replace(/\/+$/, "") || "/";
 }
+/** Server base, e.g. "/daminion" or "" for root */
+export const SERVER_BASE = getServerBase();
 
-/** Parent app base, e.g. "/daminion" or "" for root */
-export const PARENT_BASE = getParentBase();
+/** Parent app base (alias) */
+export const PARENT_BASE = SERVER_BASE;
 
 /** Router basename derived from document.baseURI */
 export const BASE_PATH = getBasePath();
