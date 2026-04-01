@@ -7,18 +7,9 @@
 //
 // The "parent base" is the first path segment (if any) from baseURI.
 
-function getParentBase(): string {
-  const base = new URL(document.baseURI);
-  // Take the first non-empty path segment as the virtual directory
-  const segments = base.pathname.split("/").filter(Boolean);
-  // If there's at least one segment, treat it as the parent directory
-  // e.g. /daminion/someApp → "/daminion"
-  //      /someApp          → "" (single segment = the app itself, no parent dir)
-  //      /develop/someApp  → "/develop"
-  if (segments.length >= 2) {
-    return `/${segments[0]}`;
-  }
-  return "";
+function getServerBase(): string {
+  const segments = window.location.pathname.replace(/^\/+/, "").split("/");
+  return segments.length > 0 && segments[0] ? `/${segments[0]}` : "";
 }
 
 function getBasePath(): string {
