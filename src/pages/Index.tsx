@@ -125,10 +125,10 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-3">
           <button
             onClick={() => { window.close(); setTimeout(() => { window.location.href = PARENT_BASE || "/"; }, 100); }}
-            className="h-14 w-14 rounded-xl bg-secondary flex items-center justify-center text-secondary-foreground hover:bg-accent transition-colors shrink-0"
+            className="h-11 w-11 rounded-lg bg-secondary flex items-center justify-center text-secondary-foreground hover:bg-accent transition-colors shrink-0"
             title="Back"
           >
-            <ArrowLeft className="h-6 w-6" />
+            <ArrowLeft className="h-5 w-5" />
           </button>
           <div className="min-w-0">
             <h1 className="text-lg font-semibold text-foreground tracking-tight">Media Queue</h1>
