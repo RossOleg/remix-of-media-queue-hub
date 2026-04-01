@@ -1,14 +1,21 @@
-// Derive all paths dynamically from document.baseURI
-//
-// Deployment scenarios:
-//   1) test.daminion.net          → API at /api
-//   2) localhost/daminion         → API at /daminion/api
-//   3) test.daminion.net/daminion → API at /daminion/api
-//
-// The "parent base" is the first path segment (if any) from baseURI.
+// Derive SERVER_BASE as everything before /apps/ in the URL path.
+// Examples:
+//   /catalog/apps/queue → SERVER_BASE = "/catalog"
+//   /apps/queue         → SERVER_BASE = ""
+//   /some/deep/apps/x   → SERVER_BASE = "/some/deep"
+//   /queue (no /apps/)  → falls back to first segment or ""
 
 function getServerBase(): string {
-  const segments = window.location.pathname.replace(/^\/+/, "").split("/");
+  const pathname = window.location.pathname;
+  const appsIndex = pathname.indexOf("/apps/");
+  if (appsIndex > 0) {
+    return pathname.substring(0, appsIndex);
+  }
+  if (appsIndex === 0) {
+    return "";
+  }
+  // Fallback: first path segment
+  const segments = pathname.replace(/^\/+/, "").split("/");
   return segments.length > 0 && segments[0] ? `/${segments[0]}` : "";
 }
 
