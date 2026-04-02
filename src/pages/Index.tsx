@@ -152,7 +152,7 @@ const Index = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               type="text"
-              value={search}
+              value={searchInput}
               onChange={e => handleSearchChange(e.target.value)}
               placeholder="Search by file name…"
               className="w-full h-10 pl-10 pr-9 rounded-xl text-sm font-mono border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-colors"
