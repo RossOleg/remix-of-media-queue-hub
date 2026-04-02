@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Search, X } from "lucide-react";
 import { usePageVisibility } from "@/hooks/use-page-visibility";
