@@ -157,7 +157,7 @@ const Index = () => {
               placeholder="Search by file name…"
               className="w-full h-10 pl-10 pr-9 rounded-xl text-sm font-mono border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-colors"
             />
-            {search && (
+            {searchInput && (
               <button
                 onClick={() => handleSearchChange("")}
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
