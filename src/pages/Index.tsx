@@ -26,6 +26,7 @@ const PAGE_SIZE = 50;
 
 const Index = () => {
   const [filter, setFilter] = useState<Filter>("all");
+  const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [authConfirmed, setAuthConfirmed] = useState(false);
