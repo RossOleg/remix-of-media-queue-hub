@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Search, X } from "lucide-react";
 import { usePageVisibility } from "@/hooks/use-page-visibility";
@@ -26,6 +26,7 @@ const PAGE_SIZE = 50;
 
 const Index = () => {
   const [filter, setFilter] = useState<Filter>("all");
+  const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [authConfirmed, setAuthConfirmed] = useState(false);
@@ -96,9 +97,20 @@ const Index = () => {
     setPage(0);
   }, []);
 
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+
   const handleSearchChange = useCallback((value: string) => {
-    setSearch(value);
-    setPage(0);
+    setSearchInput(value);
+    clearTimeout(debounceRef.current);
+    if (value === "") {
+      setSearch("");
+      setPage(0);
+    } else {
+      debounceRef.current = setTimeout(() => {
+        setSearch(value);
+        setPage(0);
+      }, 400);
+    }
   }, []);
 
   const handleSort = useCallback((key: SortKey) => {
@@ -140,12 +152,12 @@ const Index = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               type="text"
-              value={search}
+              value={searchInput}
               onChange={e => handleSearchChange(e.target.value)}
               placeholder="Search by file name…"
               className="w-full h-10 pl-10 pr-9 rounded-xl text-sm font-mono border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-colors"
             />
-            {search && (
+            {searchInput && (
               <button
                 onClick={() => handleSearchChange("")}
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
@@ -173,13 +185,13 @@ const Index = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
                 type="text"
-                value={search}
+                value={searchInput}
                 onChange={e => handleSearchChange(e.target.value)}
                 placeholder="Search by file name…"
                 autoFocus
                 className="w-full h-10 pl-10 pr-9 rounded-xl text-sm font-mono border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-colors"
               />
-              {search && (
+              {searchInput && (
                 <button
                   onClick={() => handleSearchChange("")}
                   className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
