@@ -97,9 +97,20 @@ const Index = () => {
     setPage(0);
   }, []);
 
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+
   const handleSearchChange = useCallback((value: string) => {
-    setSearch(value);
-    setPage(0);
+    setSearchInput(value);
+    clearTimeout(debounceRef.current);
+    if (value === "") {
+      setSearch("");
+      setPage(0);
+    } else {
+      debounceRef.current = setTimeout(() => {
+        setSearch(value);
+        setPage(0);
+      }, 400);
+    }
   }, []);
 
   const handleSort = useCallback((key: SortKey) => {
