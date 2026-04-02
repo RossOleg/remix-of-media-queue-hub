@@ -185,7 +185,7 @@ const Index = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
                 type="text"
-                value={search}
+                value={searchInput}
                 onChange={e => handleSearchChange(e.target.value)}
                 placeholder="Search by file name…"
                 autoFocus
