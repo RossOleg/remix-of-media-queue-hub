@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { ArrowLeft, Search, X } from "lucide-react";
 import { usePageVisibility } from "@/hooks/use-page-visibility";
 import { PARENT_BASE } from "@/lib/config";
@@ -21,14 +21,12 @@ import { QueueTable } from "@/components/QueueTable";
 
 type Filter = "all" | FileStatus;
 
-
 const PAGE_SIZE = 50;
 
 const Index = () => {
   const [filter, setFilter] = useState<Filter>("all");
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(0);
   const [authConfirmed, setAuthConfirmed] = useState(false);
   const [sortBy, setSortBy] = useState<SortKey | null>(null);
   const [sortOrder, setSortOrder] = useState<0 | 1>(0);
@@ -75,26 +73,38 @@ const Index = () => {
     root.setProperty("--sidebar-ring", palette.primary);
   }, [accentColor, isLightTheme]);
 
-  const { data: itemsData, isLoading: itemsLoading, error: itemsError } = useQuery({
-    queryKey: ["queueItems", filter, search, page, sortBy, sortOrder],
-    queryFn: () =>
+  const {
+    data: infiniteData,
+    isLoading: itemsLoading,
+    error: itemsError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["queueItems", filter, search, sortBy, sortOrder],
+    queryFn: ({ pageParam = 0 }) =>
       fetchQueueItems({
         status: STATUS_TO_INT[filter] ?? -1,
         searchText: search,
-        pageIndex: page,
+        pageIndex: pageParam,
         pageSize: PAGE_SIZE,
         sortBy: sortBy ? SORT_KEY_TO_INT[sortBy] : 0,
         sortOrder,
       }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      const totalItems = lastPage?.data?.totalItems ?? 0;
+      const loadedCount = allPages.length * PAGE_SIZE;
+      return loadedCount < totalItems ? allPages.length : undefined;
+    },
     refetchInterval: isVisible ? 5000 : false,
   });
 
-  const items = itemsData?.data?.items?.map(mapRawItem) ?? [];
-  const totalItems = itemsData?.data?.totalItems ?? 0;
+  const items = infiniteData?.pages.flatMap(p => p?.data?.items?.map(mapRawItem) ?? []) ?? [];
+  const totalItems = infiniteData?.pages[0]?.data?.totalItems ?? 0;
 
   const handleFilterChange = useCallback((f: Filter) => {
     setFilter(f);
-    setPage(0);
   }, []);
 
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
@@ -104,11 +114,9 @@ const Index = () => {
     clearTimeout(debounceRef.current);
     if (value === "") {
       setSearch("");
-      setPage(0);
     } else {
       debounceRef.current = setTimeout(() => {
         setSearch(value);
-        setPage(0);
       }, 400);
     }
   }, []);
@@ -120,8 +128,13 @@ const Index = () => {
       setSortBy(key);
       setSortOrder(0);
     }
-    setPage(0);
   }, [sortBy]);
+
+  const loadMore = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   if (!authConfirmed && statsLoading) {
     return (
@@ -178,7 +191,7 @@ const Index = () => {
           </button>
         </div>
 
-        {/* Mobile search bar — slides down below header */}
+        {/* Mobile search bar */}
         {mobileSearchOpen && (
           <div className="md:hidden px-4 pb-3 animate-in slide-in-from-top-2 duration-200">
             <div className="relative">
@@ -218,10 +231,10 @@ const Index = () => {
             items={items}
             isLoading={itemsLoading}
             error={itemsError}
-            page={page}
-            pageSize={PAGE_SIZE}
             totalItems={totalItems}
-            onPageChange={setPage}
+            isFetchingMore={isFetchingNextPage}
+            onLoadMore={loadMore}
+            hasMore={!!hasNextPage}
             sortBy={sortBy}
             sortOrder={sortOrder}
             onSort={handleSort}
