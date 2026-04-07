@@ -143,15 +143,9 @@ export function QueueTable({
     </div>
   ) : null;
 
-  const countLabel = totalItems > 0 ? (
-    <div className="px-4 py-2 text-xs text-muted-foreground font-mono border-b border-border bg-card">
-      {items.length} of {totalItems}
-    </div>
-  ) : null;
 
   return (
     <div className="rounded-lg bg-card overflow-hidden flex flex-col h-full relative">
-      {countLabel}
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
         {/* Mobile card view */}
