@@ -215,7 +215,7 @@ export function QueueTable({
                   return (
                     <th
                       key={label}
-                      className={`px-4 py-3 text-left font-medium text-muted-foreground ${label === "Progress" ? "w-36" : ""} ${sortKey ? "cursor-pointer select-none hover:text-foreground transition-colors" : ""}`}
+                      className={`px-4 py-3 font-medium text-muted-foreground ${label === "Progress" ? "w-36" : ""} ${label === "Size" ? "text-right" : "text-left"} ${sortKey ? "cursor-pointer select-none hover:text-foreground transition-colors" : ""}`}
                       onClick={sortKey ? () => onSort(sortKey) : undefined}
                     >
                       <span className="inline-flex items-center gap-1">
