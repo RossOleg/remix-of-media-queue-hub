@@ -17,10 +17,9 @@ export function QueueStatsCards({ apiStats, isLoading, error, activeFilter = "al
   const total = d ? d.waiting + d.processing + d.processed + d.failed : 0;
 
   const stats: { label: string; value: number; filter: Filter; accent: string | null }[] = [
-    { label: "Waiting", value: d?.waiting ?? 0, filter: "waiting", accent: "bg-muted/60 text-foreground" },
+    { label: "Waiting", value: d?.waiting ?? 0, filter: "waiting", accent: "bg-muted text-foreground" },
     { label: "Processing", value: d?.processing ?? 0, filter: "processing", accent: "bg-warning/15 text-warning" },
     { label: "Failed", value: d?.failed ?? 0, filter: "failed", accent: "bg-destructive/15 text-destructive" },
-    { label: "Retry", value: d?.waitingForProcessAfterError ?? 0, filter: "waitingForProcessAfterFail", accent: "bg-primary/10 text-primary" },
     { label: "Processed", value: d?.processed ?? 0, filter: "processed", accent: "bg-success/15 text-success" },
     { label: "Total", value: total, filter: "all", accent: null },
   ];
