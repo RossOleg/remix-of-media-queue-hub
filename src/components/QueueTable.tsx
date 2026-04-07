@@ -146,7 +146,6 @@ export function QueueTable({
 
   return (
     <div className="rounded-lg bg-card overflow-hidden flex flex-col h-full relative">
-      {countLabel}
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
         {/* Mobile card view */}
