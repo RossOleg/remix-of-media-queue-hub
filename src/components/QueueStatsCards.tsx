@@ -16,8 +16,8 @@ export function QueueStatsCards({ apiStats, isLoading, error, activeFilter = "al
   const d = apiStats?.data;
   const total = d ? d.waiting + d.processing + d.processed + d.failed : 0;
 
-  const stats: { label: string; value: number; filter: Filter; accent: string | null }[] = [
-    { label: "Waiting", value: d?.waiting ?? 0, filter: "waiting", accent: "bg-muted text-foreground" },
+  const stats: { label: string; value: number; filter: Filter; accent: string | null; accentEmpty?: string }[] = [
+    { label: "Waiting", value: d?.waiting ?? 0, filter: "waiting", accent: "bg-muted/80 text-foreground", accentEmpty: "bg-muted/40 text-foreground" },
     { label: "Processing", value: d?.processing ?? 0, filter: "processing", accent: "bg-warning/15 text-warning" },
     { label: "Failed", value: d?.failed ?? 0, filter: "failed", accent: "bg-destructive/15 text-destructive" },
     { label: "Processed", value: d?.processed ?? 0, filter: "processed", accent: "bg-success/15 text-success" },
@@ -37,6 +37,7 @@ export function QueueStatsCards({ apiStats, isLoading, error, activeFilter = "al
       {stats.map(s => {
         const isActive = activeFilter === s.filter;
         const hasValue = s.value > 0;
+        const bg = hasValue ? s.accent : (s.accentEmpty ?? s.accent);
 
         return (
           <button
@@ -45,8 +46,8 @@ export function QueueStatsCards({ apiStats, isLoading, error, activeFilter = "al
             className={`
               rounded-lg p-2 text-center transition-all cursor-pointer border
               ${isActive
-                ? `ring-2 ring-primary/40 border-primary/30 ${s.accent && hasValue ? s.accent : "bg-card"}`
-                : `border-transparent hover:border-border ${s.accent && hasValue ? s.accent : "bg-card"} hover:opacity-80`
+                ? `ring-2 ring-primary/40 border-primary/30 ${bg ?? "bg-card"}`
+                : `border-transparent hover:border-border ${bg && hasValue ? bg : (bg ?? "bg-card")} hover:opacity-80`
               }
             `}
           >
