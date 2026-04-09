@@ -16,7 +16,7 @@ export function QueueStatsCards({ apiStats, isLoading, error, activeFilter = "al
   const d = apiStats?.data;
   const total = d ? d.waiting + d.processing + d.processed + d.failed : 0;
 
-  const stats: { label: string; value: number; filter: Filter; accent: string | null }[] = [
+  const stats: { label: string; value: number; filter: Filter; accent: string | null; accentEmpty?: string }[] = [
     { label: "Waiting", value: d?.waiting ?? 0, filter: "waiting", accent: "bg-muted/80 text-foreground", accentEmpty: "bg-muted/40 text-foreground" },
     { label: "Processing", value: d?.processing ?? 0, filter: "processing", accent: "bg-warning/15 text-warning" },
     { label: "Failed", value: d?.failed ?? 0, filter: "failed", accent: "bg-destructive/15 text-destructive" },
