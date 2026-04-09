@@ -37,6 +37,7 @@ export function QueueStatsCards({ apiStats, isLoading, error, activeFilter = "al
       {stats.map(s => {
         const isActive = activeFilter === s.filter;
         const hasValue = s.value > 0;
+        const bg = hasValue ? s.accent : (s.accentEmpty ?? s.accent);
 
         return (
           <button
@@ -45,8 +46,8 @@ export function QueueStatsCards({ apiStats, isLoading, error, activeFilter = "al
             className={`
               rounded-lg p-2 text-center transition-all cursor-pointer border
               ${isActive
-                ? `ring-2 ring-primary/40 border-primary/30 ${s.accent && hasValue ? s.accent : "bg-card"}`
-                : `border-transparent hover:border-border ${s.accent && hasValue ? s.accent : "bg-card"} hover:opacity-80`
+                ? `ring-2 ring-primary/40 border-primary/30 ${bg ?? "bg-card"}`
+                : `border-transparent hover:border-border ${bg && hasValue ? bg : (bg ?? "bg-card")} hover:opacity-80`
               }
             `}
           >
